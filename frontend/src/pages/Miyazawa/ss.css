@@ -1,0 +1,131 @@
+/* 全体を中央に配置 */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #eef2f5;
+}
+
+/* スマホをイメージした枠組み */
+.phone-frame {
+  background-color: #ffffff;
+  width: 360px;
+  height: 640px;
+  border-radius: 36px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: 8px solid #222;
+}
+
+/* ユーザヘッダー（アイコンと名前） */
+.user-header {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #d1d5db;
+  margin-right: 16px;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* 口座番号 */
+.account-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #4b5563;
+  padding: 0 4px;
+}
+
+.account-number {
+  font-weight: bold;
+  color: #1f2937;
+  letter-spacing: 1px;
+}
+
+/* 預金残高ボックス */
+.balance-box {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: auto; /* ボタンを下に押しやるため */
+}
+
+.balance-title {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.balance-value {
+  font-size: 22px;
+  font-weight: bold;
+  color: #111827;
+}
+
+/* 送金するボタン */
+.transfer-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #1f2937;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s;
+  margin-bottom: 20px;
+}
+
+.transfer-button:hover {
+  background-color: #f3f4f6;
+}
+
+.button-icon {
+  font-size: 18px;
+}
+
+.button-text {
+  flex-grow: 1;
+  text-align: left;
+  margin-left: 12px;
+}
+
+.arrow {
+  color: #9ca3af;
+  font-size: 16px;
+}
