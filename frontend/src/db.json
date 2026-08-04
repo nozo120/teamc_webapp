@@ -1,13 +1,13 @@
 {
     "users": [
         {
-            "id": 1,
+            "userIconURL": "/images/men/man1.png",
             "accountNumber": 1234567,
             "name": "ヤマダ タロウ",
             "balance": 250000
         },
         {
-            "id": 2,
+            "userIconURL": "/images/men/man2.png",
             "accountNumber": 7654321,
             "name": "スズキ イチロウ",
             "balance": 1800000
