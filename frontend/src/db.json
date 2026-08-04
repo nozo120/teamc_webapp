@@ -1,0 +1,16 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "accountNumber": 1234567,
+            "name": "ヤマダ タロウ",
+            "balance": 250000
+        },
+        {
+            "id": 2,
+            "accountNumber": 7654321,
+            "name": "スズキ イチロウ",
+            "balance": 1800000
+        }
+    ]
+}
