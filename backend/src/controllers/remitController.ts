@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { executeRemittance } from "../services/remitService.js";
+import { dealing } from "../services/remitService.js";
 
 export const handleRemit = async (req: Request, res: Response) => {
   try {
@@ -13,7 +13,7 @@ export const handleRemit = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await executeRemittance(
+    const result = await dealing(
       Number(senderId),
       Number(receiverId),
       Number(amount),
