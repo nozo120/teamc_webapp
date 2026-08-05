@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { user } from '../../user';
+import { PATHS } from '../../routes/paths';
 import { getUsers } from './api/userApi';
 import "./UserListPage.css";
 export function UserListPage() {
@@ -36,7 +37,7 @@ export function UserListPage() {
             >
               <button className='user-button' onClick={() => {
                 // 選択された顧客情報を state に載せて送金画面へ渡す
-                navigate('/transfer', { state: { user } });
+                navigate(PATHS.TRANSFER, { state: { recipient:user } });
               }}>
                 {/* userIconURL から画像を表示 */}
                 <img
