@@ -4,6 +4,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import TransferScreen from "../TransferScreen";
 import TransferComplete from "../TransferComplete";
 import TestSelectRecipient from "./TestSelectRecipient";
+import { PATHS } from "../../../routes/paths";
 
 const MoritaTestApp: React.FC = () => {
   // 自分の所持金・自分のID（本来はAPIから取得。テスト中は固定値）
@@ -17,7 +18,7 @@ const MoritaTestApp: React.FC = () => {
       <Routes>
         <Route path="/" element={<TestSelectRecipient />} />
         <Route path="/transfer" element={<TransferScreen maxAmount={myBalance} senderId={myUserId} />} />
-        <Route path="/transfer-complete" element={<TransferComplete />} />
+        <Route path={PATHS.COMPLETE} element={<TransferComplete />} />
       </Routes>
     </MemoryRouter>
   );

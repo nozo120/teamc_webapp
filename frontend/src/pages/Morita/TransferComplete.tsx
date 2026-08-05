@@ -33,7 +33,9 @@ const TransferComplete: React.FC = () => {
 
         <p className="section-label">送金先</p>
         <div className="recipient-area">
-          <img className="recipient-image" src={user.imageUrl} alt={user.name} />
+          <div className="recipient-avatar">
+            <img src={user.imageUrl} alt={user.name} />
+          </div>
           <span className="recipient-name">{user.name}</span>
         </div>
 
