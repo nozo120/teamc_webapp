@@ -9,6 +9,7 @@ import { getUser } from './utils/userApi';
 import { getMyUserId } from './utils/myUserId';
 // TransferScreen は default export なので { } は付けない
 import TransferScreen from './pages/Morita/TransferScreen';
+import TransferComplete from './pages/Morita/TransferComplete';
 
 // TODO: ログイン機能ができたら、自分のIDはログイン情報から取得する
 const MY_USER_ID = getMyUserId();
@@ -45,8 +46,8 @@ function App() {
               : <TransferScreen maxAmount={myBalance} senderId={MY_USER_ID} />
           }
         />
-        {/* TODO: 送金完了画面ができたら element を差し替える */}
-        <Route path={PATHS.COMPLETE} element={<div>送金完了画面（未実装）</div>} />
+        {/* 送金完了画面 */}
+        <Route path={PATHS.COMPLETE} element={<TransferComplete />} />
         {/* 請求リンクの作成画面 */}
         <Route path={PATHS.INVOICE_CREATE} element={<InvoicelinkCreationPage />} />
         {/* 定義していないURLはホームに戻す */}

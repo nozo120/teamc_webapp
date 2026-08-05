@@ -2,11 +2,11 @@
 import { useNavigate } from "react-router-dom";
 import type { User } from "../types";
 
-// テスト用ダミーデータ
+// テスト用ダミーデータ（画像は public/images に実在するものを指定）
 const dummyUsers: User[] = [
-  { id: "2", name: "佐藤次郎", imageUrl: "/images/human2.png" },
-  { id: "3", name: "佐藤三郎", imageUrl: "/images/human3.png" },
-  { id: "4", name: "佐々木花子", imageUrl: "/images/human4.png" },
+  { id: "2", name: "佐藤次郎", imageUrl: "/images/men/man2.png" },
+  { id: "3", name: "佐藤三郎", imageUrl: "/images/men/man3.png" },
+  { id: "4", name: "佐々木花子", imageUrl: "/images/women/woman1.png" },
 ];
 
 const TestSelectRecipient: React.FC = () => {
