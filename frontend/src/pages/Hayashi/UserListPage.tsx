@@ -1,11 +1,11 @@
 // src/pages/Hayashi/UserListPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { User } from './User';
+import { user } from '../../user';
 import { getUsers } from './api/userApi';
 import "./UserListPage.css";
 export function UserListPage() {
-  const [userList, setUserList] = useState<User[]>([]);
+  const [userList, setUserList] = useState<user[]>([]);
   const navigate = useNavigate();
 
   //useEffect(() => {},[])のときは最初に一度だけ実行される
