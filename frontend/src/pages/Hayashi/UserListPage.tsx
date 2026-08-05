@@ -36,7 +36,8 @@ export function UserListPage() {
         <ul className='user-list'>
           {userList
             // 自分自身には送金できないのでリストから除外する
-            .filter((user) => user.id !== MY_USER_ID)
+            // json-server は id を文字列("1")で返すので、数値に直してから比較する
+            .filter((user) => Number(user.id) !== MY_USER_ID)
             .map((user) => (
             <li
               key={user.accountNumber} // または user.id
