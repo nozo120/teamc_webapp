@@ -13,7 +13,7 @@ export default function UserInfo() {
 
   // 請求するボタンを押したときの処理
   const handleRequestClick = () => {
-    navigate(PATHS.USER_LIST); // 請求相手選択画面（またはユーザーリスト）へ遷移
+    navigate(PATHS.INVOICE_USER_LIST); // 請求先選択画面へ遷移
   };
 
   // 残高を表示しているかどうかを管理するステート（初期値: true = 表示）

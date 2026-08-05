@@ -4,6 +4,7 @@ import './App.css';
 import { PATHS } from './routes/paths';
 import UserInfo from './pages/Miyazawa/ss';
 import { UserListPage } from './pages/Hayashi/UserListPage';
+import { InvoicelinkCreationPage } from './pages/Hayashi/InvoicelinkCreationPage';
 import { getUser } from './utils/userApi';
 import { getMyUserId } from './utils/myUserId';
 // TransferScreen は default export なので { } は付けない
@@ -31,7 +32,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path={PATHS.HOME} element={<UserInfo />} />
-        <Route path={PATHS.USER_LIST} element={<UserListPage />} />
+        {/* 同じ一覧を、送金相手を選ぶ用と請求先を選ぶ用で使い分ける */}
+        <Route path={PATHS.USER_LIST} element={<UserListPage mode='transfer' />} />
+        <Route path={PATHS.INVOICE_USER_LIST} element={<UserListPage mode='invoice' />} />
         {/* 送金金額の入力画面。送金先は UserListPage から state で渡される */}
         {/* 所持金が取れるまでは TransferScreen を描画しない（上限0円で表示されるのを防ぐ） */}
         <Route
@@ -44,6 +47,8 @@ function App() {
         />
         {/* TODO: 送金完了画面ができたら element を差し替える */}
         <Route path={PATHS.COMPLETE} element={<div>送金完了画面（未実装）</div>} />
+        {/* 請求リンクの作成画面 */}
+        <Route path={PATHS.INVOICE_CREATE} element={<InvoicelinkCreationPage />} />
         {/* 定義していないURLはホームに戻す */}
         <Route path="*" element={<Navigate to={PATHS.HOME} replace />} />
       </Routes>
