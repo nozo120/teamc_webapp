@@ -6,8 +6,9 @@ import TestSelectRecipient from "./TestSelectRecipient";
 import TestTransferComplete from "./TestTransferComplete";
 
 const MoritaTestApp: React.FC = () => {
-  // 自分の所持金（本来はAPIから取得。テスト中は固定値）
+  // 自分の所持金・自分のID（本来はAPIから取得。テスト中は固定値）
   const myBalance = 80000;
+  const myUserId = 1;
 
   return (
     // MemoryRouter … URLを変えずに画面遷移だけ動かすルーター
@@ -15,7 +16,7 @@ const MoritaTestApp: React.FC = () => {
     <MemoryRouter initialEntries={["/"]}>
       <Routes>
         <Route path="/" element={<TestSelectRecipient />} />
-        <Route path="/transfer" element={<TransferScreen maxAmount={myBalance} />} />
+        <Route path="/transfer" element={<TransferScreen maxAmount={myBalance} senderId={myUserId} />} />
         <Route path="/transfer-complete" element={<TestTransferComplete />} />
       </Routes>
     </MemoryRouter>
