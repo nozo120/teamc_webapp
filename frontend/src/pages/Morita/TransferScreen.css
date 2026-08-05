@@ -15,31 +15,90 @@
   box-sizing: border-box;
   overflow-y: auto;
 }
-.full-page { padding: 20px; }
+.full-page { padding: 28px 20px 16px; }
 .back-button {
-  background: none; border: none; color: #333; font-size: 14px;
-  padding: 4px 0; margin-bottom: 8px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: none; border: none; color: #555; font-size: 14px;
+  padding: 4px 10px; margin-left: -10px; border-radius: 6px; cursor: pointer;
 }
-.section-label { font-size: 13px; color: #333; margin: 24px 0 8px; }
-.recipient-area { display: flex; align-items: center; gap: 12px; }
-.recipient-image { width: 60px; height: 60px; border-radius: 50%; }
-.recipient-name { font-size: 18px; }
-.max-amount-text { text-align: right; font-size: 14px; }
-.input-with-unit {
-  display: flex; align-items: center;
-  background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 0 12px;
+.back-button:hover { background: #f3f4f6; }
+.section-label { font-size: 13px; color: #333; margin: 14px 0 6px; }
+.section-label:first-of-type { margin-top: 10px; }
+/* 送金先＋金額のメイン表示 */
+.amount-hero {
+  background: linear-gradient(160deg, #f0555f 0%, #e0343f 100%);
+  border-radius: 14px; padding: 16px 18px 20px; margin-top: 8px;
+  color: #fff;
 }
-.amount-input { flex: 1; border: none; outline: none; padding: 14px 0; text-align: center; font-size: 16px; background: transparent; }
-.unit { color: #333; }
-.input-with-unit.over-limit { background: #FCE8E8; border-color: #C1272D; }
+.amount-hero.over-limit {
+  background: linear-gradient(160deg, #9b1c24 0%, #7a141b 100%);
+}
+.hero-recipient { display: flex; align-items: center; gap: 8px; }
+.hero-avatar {
+  width: 26px; height: 26px; border-radius: 50%; overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.4); flex-shrink: 0;
+}
+.hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.hero-recipient-name { font-size: 13px; }
+.hero-amount {
+  display: flex; align-items: baseline; justify-content: center;
+  gap: 2px; margin-top: 14px;
+}
+.hero-amount-input {
+  border: none; outline: none; background: transparent;
+  color: #fff; font-size: 38px; font-weight: bold;
+  text-align: right; padding: 0; min-width: 1ch;
+}
+.hero-amount-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+.hero-yen { font-size: 20px; font-weight: bold; }
+/* 計算の途中経過（例：3 ×）を金額と同じ行に薄く出す */
+.hero-pending {
+  font-size: 30px; font-weight: bold;
+  color: rgba(255, 255, 255, 0.65); margin-right: 8px;
+}
+/* 送金上限額の行 */
+.balance-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; color: #4b5563; margin-top: 12px;
+}
+.balance-value { font-weight: bold; color: #1f2937; }
 .message-input {
   width: 100%; box-sizing: border-box;
-  padding: 14px 12px; border: 1px solid #333; border-radius: 4px;
-  text-align: center; font-size: 16px;
+  padding: 11px 12px; border: 1px solid #ccc; border-radius: 6px;
+  font-size: 15px;
 }
-.error-text { color: #C1272D; font-size: 13px; margin-top: 6px; }
+/* 完了画面で使う送金先表示（アイコン＋名前） */
+.recipient-area { display: flex; align-items: center; gap: 12px; }
+.recipient-avatar {
+  width: 48px; height: 48px; border-radius: 50%; overflow: hidden;
+  background-color: #d1d5db; flex-shrink: 0;
+}
+.recipient-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.recipient-name { font-size: 17px; }
+.error-text { color: #C1272D; font-size: 13px; margin: 6px 0 0; }
+.calc-hint { font-size: 12px; color: #6b7280; margin: 6px 0 0; }
+/* 支払い画面：金額は変更できないので入力欄ではなく文字で出す */
+.hero-amount-fixed { font-size: 38px; font-weight: bold; }
+.payment-message {
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+  padding: 10px 12px; font-size: 14px; color: #374151;
+  margin: 0; word-break: break-all;
+}
+.payment-time { font-size: 11px; color: #9ca3af; margin: 14px 0 0; }
+.calc-pad {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px; margin-top: 8px;
+}
+.calc-button {
+  padding: 8px 0; font-size: 15px; cursor: pointer;
+  background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; color: #1f2937;
+}
+.calc-button:hover { background: #f3f4f6; }
+.calc-button.equals { background: #e5e7eb; font-weight: bold; }
+.calc-button.tax { grid-column: span 2; }
+.calc-button.clear { color: #C1272D; }
 .submit-button {
-  width: 100%; padding: 14px; margin-top: 12px;
+  width: 100%; padding: 12px; margin-top: 14px;
   background: #C1272D; color: #fff; border: none; border-radius: 4px;
   font-size: 16px; cursor: pointer;
 }

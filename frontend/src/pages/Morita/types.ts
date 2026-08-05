@@ -19,4 +19,6 @@ export type TransferCompleteState = {
   recipient: User;
   amount: number; // 整数・円単位
   message: string;
+  // 完了画面の文言を出し分ける。省略時は送金あつかい
+  kind?: "transfer" | "payment";
 };

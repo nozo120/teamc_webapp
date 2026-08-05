@@ -1,0 +1,160 @@
+// PaymentScreen.tsx
+// 請求リンクから開かれる「支払い」画面
+//
+// リンクの形式（請求リンク作成側が生成する）:
+//   /payment/?time=2026-8-5-15-27-39-435&kozaBango=1000000&kingaku=6&message=飲み会代
+//   time      … 請求が作られた日時
+//   kozaBango … 請求した人の口座番号
+//   kingaku   … 請求金額
+//   message   … 請求メッセージ（任意。未入力だと "undefined" が入ってくることがある）
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import type { User } from "./types";
+import { remit, fetchUserByAccountNumber } from "./api/remitApi";
+import { PATHS } from "../../routes/paths";
+import "./TransferScreen.css";
+
+type Props = {
+  maxAmount: number; // 支払い上限額（自分の所持金）
+  senderId: number;  // 支払う人＝ログイン中の自分
+};
+
+// "2026-8-5-15-27-39-435" を「2026年8月5日 15:27:39」に整える
+const formatLinkTime = (raw: string | null) => {
+  if (!raw) return "";
+  const [y, mo, d, h, mi, s] = raw.split("-");
+  if (!y || !mo || !d) return raw;
+  const pad = (v?: string) => String(v ?? "0").padStart(2, "0");
+  return `${y}年${mo}月${d}日 ${pad(h)}:${pad(mi)}:${pad(s)}`;
+};
+
+const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // リンクから請求内容を取り出す
+  const accountNumber = searchParams.get("kozaBango");
+  const amount = parseInt(searchParams.get("kingaku") ?? "", 10);
+  const rawMessage = searchParams.get("message");
+  // 未入力のとき文字列の "undefined" が入ってくるので、空メッセージとして扱う
+  const message = !rawMessage || rawMessage === "undefined" ? "" : rawMessage;
+  const requestedAt = formatLinkTime(searchParams.get("time"));
+
+  // 請求した人の情報（口座番号からDBを引く）
+  const [requester, setRequester] = useState<User | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!accountNumber) {
+      setLoadError("リンクに請求元の情報が含まれていません");
+      return;
+    }
+    fetchUserByAccountNumber(accountNumber)
+      .then((user) => setRequester(user))
+      .catch((err) => setLoadError(err.message));
+  }, [accountNumber]);
+
+  // 金額が読み取れない＝リンクが壊れている
+  const isInvalidLink = isNaN(amount) || amount <= 0;
+  // 残高が足りているか
+  const isOverLimit = !isInvalidLink && amount > maxAmount;
+  const canSubmit = !isInvalidLink && !isOverLimit && requester !== null && !isSubmitting;
+
+  const handlePay = async () => {
+    if (!canSubmit || !requester) return;
+
+    const confirmed = window.confirm(`${amount.toLocaleString()}円を支払います。よろしいですか？`);
+    if (!confirmed) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      await remit({
+        senderId,
+        receiverId: Number(requester.id),
+        amount,
+        message,
+      });
+
+      navigate(PATHS.COMPLETE, {
+        state: { recipient: requester, amount, message, kind: "payment" },
+      });
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "支払いに失敗しました");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // リンク自体がおかしい場合は入力画面を出さない
+  if (isInvalidLink || loadError) {
+    return (
+      <div className="container">
+        <div className="phone-frame full-page">
+          <p>{loadError ?? "請求リンクが正しくありません"}</p>
+          <button className="submit-button" onClick={() => navigate(PATHS.HOME)}>
+            ホームに戻る
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container">
+      <div className="phone-frame full-page">
+        {/* 請求元と請求金額 */}
+        <div className={isOverLimit ? "amount-hero over-limit" : "amount-hero"}>
+          <div className="hero-recipient">
+            <div className="hero-avatar">
+              {requester && <img src={requester.imageUrl} alt={requester.name} />}
+            </div>
+            <span className="hero-recipient-name">
+              {requester ? `${requester.name} さんへの支払い` : "請求元を確認中..."}
+            </span>
+          </div>
+
+          <div className="hero-amount">
+            {/* 請求金額は変更できないので入力欄ではなく表示のみ */}
+            <span className="hero-amount-fixed">{amount.toLocaleString()}</span>
+            <span className="hero-yen">円</span>
+          </div>
+        </div>
+
+        {isOverLimit && <p className="error-text">※残高が不足しています</p>}
+
+        <div className="balance-row">
+          <span>支払い後の残高</span>
+          <span className="balance-value">
+            {isOverLimit ? "-" : (maxAmount - amount).toLocaleString()}円
+          </span>
+        </div>
+
+        {/* 請求メッセージ（あれば） */}
+        {message && (
+          <>
+            <p className="section-label">メッセージ</p>
+            <p className="payment-message">{message}</p>
+          </>
+        )}
+
+        {requestedAt && <p className="payment-time">請求日時 {requestedAt}</p>}
+
+        {submitError && <p className="error-text">{submitError}</p>}
+
+        <button
+          className={canSubmit ? "submit-button" : "submit-button disabled"}
+          onClick={handlePay}
+          disabled={!canSubmit}
+        >
+          {isSubmitting ? "支払い中..." : "支払う"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default PaymentScreen;

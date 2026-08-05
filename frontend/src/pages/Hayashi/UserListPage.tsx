@@ -3,11 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { user } from '../../user';
 import { PATHS } from '../../routes/paths';
-import { getUsers } from './api/userApi';
+import { getUsers } from '../../utils/userApi';
+import { getMyUserId } from '../../utils/myUserId';
 import "./UserListPage.css";
 export function UserListPage() {
   const [userList, setUserList] = useState<user[]>([]);
   const navigate = useNavigate();
+
+  //使用者のIdを取得
+  const MY_USER_ID = getMyUserId();
 
   //useEffect(() => {},[])のときは最初に一度だけ実行される
   useEffect(() => {
@@ -30,7 +34,11 @@ export function UserListPage() {
       <div className='phone'>
         <h2 className='phone-title'>送金相手を選択</h2>
         <ul className='user-list'>
-          {userList.map((user) => (
+          {userList
+            // 自分自身には送金できないのでリストから除外する
+            // json-server は id を文字列("1")で返すので、数値に直してから比較する
+            .filter((user) => Number(user.id) !== MY_USER_ID)
+            .map((user) => (
             <li
               key={user.accountNumber} // または user.id
               className='user-list-item'
