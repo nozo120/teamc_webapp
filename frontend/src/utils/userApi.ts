@@ -1,4 +1,4 @@
-// src/api/userApi.ts
+// src/utils/userApi.ts
 import { user } from '../user';
 
 const API_URL = 'http://localhost:3010/users';

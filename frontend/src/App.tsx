@@ -4,12 +4,13 @@ import './App.css';
 import { PATHS } from './routes/paths';
 import UserInfo from './pages/Miyazawa/ss';
 import { UserListPage } from './pages/Hayashi/UserListPage';
-import { getUser } from './pages/Hayashi/api/userApi';
+import { getUser } from './utils/userApi';
+import { getMyUserId } from './utils/myUserId';
 // TransferScreen は default export なので { } は付けない
 import TransferScreen from './pages/Morita/TransferScreen';
 
 // TODO: ログイン機能ができたら、自分のIDはログイン情報から取得する
-const MY_USER_ID = 1;
+const MY_USER_ID = getMyUserId();
 
 function App() {
   // 自分の所持金。取得できるまでは null（＝読み込み中）
