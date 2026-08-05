@@ -22,6 +22,17 @@ const fetchUser = async (id: number) => {
   return res.json();
 };
 
+// 口座番号からユーザーを1件探す（請求リンクには口座番号しか入っていないため）
+export const fetchUserByAccountNumber = async (accountNumber: string) => {
+  const res = await fetch(`${API_BASE}/users?accountNumber=${accountNumber}`);
+  if (!res.ok) throw new Error("請求元の情報が取得できませんでした");
+  const users = await res.json();
+  if (!Array.isArray(users) || users.length === 0) {
+    throw new Error("請求元のユーザーが見つかりませんでした");
+  }
+  return users[0];
+};
+
 // 残高だけを書き換える（PATCHは指定した項目だけ更新する）
 const updateBalance = async (id: number, balance: number) => {
   const res = await fetch(`${API_BASE}/users/${id}`, {

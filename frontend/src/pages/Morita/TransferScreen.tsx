@@ -1,5 +1,5 @@
 // TransferScreen.tsx
-import { useState } from "react";//入力中のあたいをほじするもの
+import { useRef, useState } from "react";//入力中のあたいをほじするもの
 import { useNavigate, useLocation } from "react-router-dom";//別の画面に遷移するための関数取得、前画面から受け取るやつ
 import type { TransferScreenState } from "./types";
 import { remit } from "./api/remitApi";
@@ -9,6 +9,25 @@ import "./TransferScreen.css";
 type Props = {
   maxAmount: number; // 送金上限額（自分の所持金）
   senderId: number;  // 送金元ユーザーID（ログイン中の自分）
+};
+
+// 電卓で使う演算子
+type Operator = "+" | "-" | "×" | "÷";
+
+// 消費税率
+const TAX_RATE = 0.1;
+
+// 金額は必ず0以上の整数にそろえる（小数は1円のズレになるので切り捨て）
+const toYen = (value: number) => Math.max(0, Math.floor(value));
+
+// 2つの数を演算子どおりに計算する
+const calculate = (a: number, b: number, op: Operator): number => {
+  switch (op) {
+    case "+": return a + b;
+    case "-": return a - b;
+    case "×": return a * b;
+    case "÷": return b === 0 ? a : a / b; // 0除算は計算せず元の値のまま
+  }
 };
 
 const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
@@ -28,6 +47,11 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   const [message, setMessage] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // 電卓：確定済みの値と、押された演算子を覚えておく
+  const [pendingValue, setPendingValue] = useState<number | null>(null);
+  const [pendingOp, setPendingOp] = useState<Operator | null>(null);
+  // 金額入力欄そのものへの参照（ボタンを押しても入力欄にカーソルを戻すため）
+  const amountInputRef = useRef<HTMLInputElement>(null);
 
   // -----------------------------------------------------------
   // ガード：直接URLを打たれた/リロードされた場合はstateが空になる
@@ -51,17 +75,90 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   // -----------------------------------------------------------
   const amount = parseInt(amountText, 10);
 
+  // 画面に出す用の3桁区切り表示（12345 → 12,345）
+  const displayAmount = isNaN(amount) ? "" : amount.toLocaleString();
+
   // 上限額を超えているか
   const isOverLimit = !isNaN(amount) && amount > maxAmount;
 
   // 送金ボタンを押せる条件
-  const canSubmit = !isNaN(amount) && amount > 0 && !isOverLimit;
+  // 計算の途中（例：5000 × と押しただけ）では送金させない
+  const canSubmit = !isNaN(amount) && amount > 0 && !isOverLimit && pendingOp === null;
 
   // 数字以外の文字を除去してから保存する
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
     setAmountText(onlyNumbers);
   };
+
+  // 演算子（＋−×÷）を押したとき
+  // 直前に計算待ちがあれば先に確定させてから、新しい演算子を覚える
+  const handleOperator = (op: Operator) => {
+    if (isNaN(amount)) {
+      // 数字がまだ入っていない場合は、演算子の押し間違いとみなして差し替えるだけ
+      if (pendingValue !== null) setPendingOp(op);
+      return;
+    }
+    if (pendingValue !== null && pendingOp !== null) {
+      setPendingValue(toYen(calculate(pendingValue, amount, pendingOp)));
+    } else {
+      setPendingValue(amount);
+    }
+    setPendingOp(op);
+    setAmountText(""); // 次の数字を受け付けるため入力欄を空にする
+  };
+
+  // ＝を押したとき：計算結果を入力欄に入れて、計算待ちを解除する
+  const handleEquals = () => {
+    if (pendingValue === null || pendingOp === null || isNaN(amount)) return;
+    setAmountText(String(toYen(calculate(pendingValue, amount, pendingOp))));
+    setPendingValue(null);
+    setPendingOp(null);
+  };
+
+  // 税込ボタン：今表示している金額に消費税を上乗せする
+  const handleTax = () => {
+    if (isNaN(amount)) return;
+    setAmountText(String(toYen(amount * (1 + TAX_RATE))));
+  };
+
+  // Cボタン：入力と計算待ちを全部リセットする
+  const handleClear = () => {
+    setAmountText("");
+    setPendingValue(null);
+    setPendingOp(null);
+  };
+
+  // 入力欄でキーを押したとき：＋ − * / = Enter Esc を電卓の操作として扱う
+  const handleAmountKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // キーボードの記号と、画面上の演算子の対応表
+    const opKeys: Record<string, Operator> = {
+      "+": "+",
+      "-": "-",
+      "*": "×",
+      "x": "×",
+      "/": "÷",
+    };
+
+    const op = opKeys[e.key];
+    if (op) {
+      e.preventDefault(); // 記号そのものが入力欄に入らないようにする
+      handleOperator(op);
+      return;
+    }
+    if (e.key === "=" || e.key === "Enter") {
+      e.preventDefault();
+      handleEquals();
+      return;
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      handleClear();
+    }
+  };
+
+  // 電卓ボタンを押しても入力欄からカーソルが外れないようにする
+  const keepFocus = (e: React.MouseEvent) => e.preventDefault();
 
   // 送金ボタンを押したとき
   const handleSubmit = async () => {
@@ -100,34 +197,59 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         ← 戻る
       </button>
 
-      {/* 送金先（前の画面から受け取った名前とアイコン） */}
-      <p className="section-label">送金先</p>
-      <div className="recipient-area">
-        <div className="recipient-avatar">
-          <img src={recipient.imageUrl} alt={recipient.name} />
+      {/* 送金先と金額をまとめたメイン表示 */}
+      <div className={isOverLimit ? "amount-hero over-limit" : "amount-hero"}>
+        <div className="hero-recipient">
+          <div className="hero-avatar">
+            <img src={recipient.imageUrl} alt={recipient.name} />
+          </div>
+          <span className="hero-recipient-name">{recipient.name} さんに送る</span>
         </div>
-        <span className="recipient-name">{recipient.name}</span>
+
+        <div className="hero-amount">
+          {/* 計算の途中経過（例：3 ×）を金額の左にそのまま並べる */}
+          {pendingValue !== null && pendingOp !== null && (
+            <span className="hero-pending">{pendingValue.toLocaleString()} {pendingOp}</span>
+          )}
+          <input
+            ref={amountInputRef}
+            type="text"
+            inputMode="numeric"
+            placeholder="0"
+            value={displayAmount}
+            onChange={handleAmountChange}
+            onKeyDown={handleAmountKeyDown}
+            autoFocus
+            className="hero-amount-input"
+            // 入力した桁数ぶんだけ幅を広げて、常に「円」が数字の右隣に来るようにする
+            style={{ width: `${Math.max(1, displayAmount.length)}ch` }}
+          />
+          <span className="hero-yen">円</span>
+        </div>
       </div>
 
-      {/* 送金上限額（＝所持金） */}
-      <p className="section-label">送金上限額</p>
-      <p className="max-amount-text">{maxAmount.toLocaleString()}円</p>
-
-      {/* 金額入力 */}
-      <p className="section-label">送金金額</p>
-      <div className={isOverLimit ? "input-with-unit over-limit" : "input-with-unit"}>
-        <input
-          type="text"
-          inputMode="numeric"
-          placeholder="金額"
-          value={amountText}
-          onChange={handleAmountChange}
-          className="amount-input"
-        />
-        <span className="unit">円</span>
-      </div>
       {isOverLimit && (
         <p className="error-text">※上限金額を超えています</p>
+      )}
+
+      {/* 送金上限額（＝所持金）は1行にまとめる */}
+      <div className="balance-row">
+        <span>送金上限額</span>
+        <span className="balance-value">{maxAmount.toLocaleString()}円</span>
+      </div>
+
+      {/* 電卓：四則演算と税込計算 */}
+      <div className="calc-pad" onMouseDown={keepFocus}>
+        <button type="button" className="calc-button" onClick={() => handleOperator("+")}>＋</button>
+        <button type="button" className="calc-button" onClick={() => handleOperator("-")}>−</button>
+        <button type="button" className="calc-button" onClick={() => handleOperator("×")}>×</button>
+        <button type="button" className="calc-button" onClick={() => handleOperator("÷")}>÷</button>
+        <button type="button" className="calc-button equals" onClick={handleEquals}>＝</button>
+        <button type="button" className="calc-button tax" onClick={handleTax}>税込</button>
+        <button type="button" className="calc-button clear" onClick={handleClear}>C</button>
+      </div>
+      {pendingOp !== null && (
+        <p className="calc-hint">※計算中です。＝を押して金額を確定してください</p>
       )}
 
       {/* メッセージ（任意） */}
