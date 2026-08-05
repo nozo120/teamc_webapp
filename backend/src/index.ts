@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import requestRoute from "./routes/requestRoutes.js";
 
 dotenv.config();
 
@@ -15,7 +16,10 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Team C バックエンドサーバー起動中！' });
 });
-
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+
+app.use("/request", requestRoute);
