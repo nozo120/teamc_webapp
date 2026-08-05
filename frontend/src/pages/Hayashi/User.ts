@@ -1,5 +1,5 @@
 export type User = {
-    userIcon:Blob;
+    userIconURL:string;
     accountNumber:number;
     name:string;
     balance:number;
