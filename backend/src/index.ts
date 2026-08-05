@@ -16,6 +16,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Team C バックエンドサーバー起動中！' });
 });
 
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
