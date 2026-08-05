@@ -1,15 +1,26 @@
 // TransferComplete.tsx
 // 送金完了画面（本番用）
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { TransferCompleteState } from "./types";
 import { PATHS } from "../../routes/paths";
 import "./TransferScreen.css";
 import "./TransferComplete.css";
 
+// 2026年8月5日 13:45:07 の形に整える
+const formatDateTime = (date: Date) =>
+  `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ` +
+  [date.getHours(), date.getMinutes(), date.getSeconds()]
+    .map((n) => String(n).padStart(2, "0"))
+    .join(":");
+
 const TransferComplete: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as TransferCompleteState | null;
+
+  // 完了日時。この画面を開いた時刻で固定する（再描画のたびに変わらないよう関数で初期化）
+  const [completedAt] = useState(() => new Date());
 
   // ガード：直接URLを打たれた/リロードされた場合はstateが空になる
   if (!state || !state.recipient) {
@@ -23,31 +34,34 @@ const TransferComplete: React.FC = () => {
     );
   }
 
-  const { recipient: user, amount, message } = state;
+  const { recipient: user, amount, message, kind } = state;
+
+  // 請求リンクからの支払いか、通常の送金かで文言だけ変える
+  const isPayment = kind === "payment";
+  const title = isPayment ? "支払いが完了しました" : "送金が完了しました";
+  const amountLabel = isPayment ? "支払額" : "送金額";
 
   return (
     <div className="container">
-      <div className="phone-frame full-page">
-        <div className="complete-icon">✓</div>
-        <p className="complete-title">送金が完了しました</p>
+      <div className="phone-frame complete-page">
+        <div className="complete-avatar">
+          <img src={user.imageUrl} alt={user.name} />
+        </div>
+        <p className="complete-to">{user.name} さんに</p>
 
-        <p className="section-label">送金先</p>
-        <div className="recipient-area">
-          <div className="recipient-avatar">
-            <img src={user.imageUrl} alt={user.name} />
-          </div>
-          <span className="recipient-name">{user.name}</span>
+        <h2 className="complete-title">{title}</h2>
+
+        <div className="complete-amount-box">
+          <p className="complete-amount-label">{amountLabel}</p>
+          <p className="complete-amount">
+            {amount.toLocaleString()}
+            <span className="complete-yen">円</span>
+          </p>
         </div>
 
-        <p className="section-label">送金金額</p>
-        <p className="complete-amount">{amount.toLocaleString()}円</p>
+        {message && <p className="complete-message">{message}</p>}
 
-        {message && (
-          <>
-            <p className="section-label">メッセージ</p>
-            <p className="complete-message">{message}</p>
-          </>
-        )}
+        <p className="complete-datetime">完了日時 {formatDateTime(completedAt)}</p>
 
         <button className="submit-button" onClick={() => navigate(PATHS.HOME)}>
           ホームに戻る

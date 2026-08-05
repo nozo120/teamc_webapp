@@ -1,12 +1,34 @@
-.complete-icon {
-  width: 56px; height: 56px; border-radius: 50%;
-  background: #2e7d32; color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px; margin: 12px auto 16px;
+/* 完了画面：中央そろえの1カラム */
+.complete-page {
+  padding: 40px 24px 24px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
 }
-.complete-title { text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 8px; }
-.complete-amount { text-align: right; font-size: 22px; font-weight: bold; }
+.complete-avatar {
+  width: 92px; height: 92px; border-radius: 50%; overflow: hidden;
+  background-color: #e5e7eb; flex-shrink: 0;
+}
+.complete-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.complete-to { font-size: 12px; color: #6b7280; margin: 12px 0 0; }
+.complete-title {
+  font-size: 19px; font-weight: bold; color: #374151;
+  margin: 28px 0 0;
+}
+.complete-amount-box {
+  width: 100%; box-sizing: border-box;
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px;
+  padding: 16px 20px; margin-top: 28px;
+}
+.complete-amount-label { font-size: 12px; color: #9ca3af; margin: 0 0 6px; }
+.complete-amount {
+  font-size: 34px; color: #4b5563; margin: 0;
+}
+.complete-yen { font-size: 17px; margin-left: 2px; }
 .complete-message {
   background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
-  padding: 12px; font-size: 14px;
+  padding: 10px 14px; font-size: 14px; color: #374151;
+  margin: 20px 0 0; max-width: 100%; word-break: break-all;
 }
+.complete-datetime { font-size: 11px; color: #9ca3af; margin: 40px 0 0; }
+/* ホームに戻るボタンは下端に寄せる */
+.complete-page .submit-button { margin-top: auto; }
