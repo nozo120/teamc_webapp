@@ -1,25 +1,61 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
+// このファイルはPrismaのスキーマ定義ファイルです
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+generator client {
+  provider = "prisma-client-js"
+}
 
+// 1. ユーザーテーブル
 model User {
   id Int @id @default(autoincrement())
   name String
-  account_number String @unique
+  accountNumber String @unique
   balance Int
-  iconURL String
+  userIconURL String?
 
 
+}
+
+  // 送金履歴
+  sentTransactions     Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+
+  // 請求
+  createdRequests Request[] @relation("CreatedRequests")
+  paidRequests    Request[] @relation("PaidRequests")
+}
+
+
+// 2. 送金履歴テーブル
+model Transaction {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  amount     Int
+  message    String?
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentTransactions", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedTransactions", fields: [receiverId], references: [id])
+
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+// 3. 請求（インボイス）テーブル
+model Request {
+  id          Int      @id @default(autoincrement())
+  requesterId Int                                    // 請求した人のID
+  payerId     Int                                    // 請求された（払う）人のID
+  amount      Int                                    // 請求金額
+  message     String?                                // 請求理由など
+  status      String   @default("pending")           // 状態（pending / paid / canceled）
+  createdAt   DateTime @default(now())
+
+  // リレーションの設定
+  requester User @relation("CreatedRequests", fields: [requesterId], references: [id])
+  payer     User @relation("PaidRequests", fields: [payerId], references: [id])
 }

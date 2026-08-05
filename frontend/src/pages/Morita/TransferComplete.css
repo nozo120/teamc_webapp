@@ -1,0 +1,12 @@
+.complete-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #2e7d32; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin: 12px auto 16px;
+}
+.complete-title { text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 8px; }
+.complete-amount { text-align: right; font-size: 22px; font-weight: bold; }
+.complete-message {
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+  padding: 12px; font-size: 14px;
+}
