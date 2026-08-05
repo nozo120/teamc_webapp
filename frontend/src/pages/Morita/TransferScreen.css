@@ -1,3 +1,20 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #eef2f5;
+}
+.phone-frame {
+  background-color: #fff;
+  width: 360px;
+  height: 640px;
+  border-radius: 36px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 8px solid #222;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
 .full-page { padding: 20px; }
 .back-button {
   background: none; border: none; color: #333; font-size: 14px;
