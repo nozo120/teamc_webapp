@@ -1,24 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { PATHS } from '../../routes/paths';
+import { getUser } from '../../utils/userApi'; // 1件取得するAPI関数
+import { getMyUserId } from '../../utils/myUserId'; // getMyUserId 関数に変更
+import { user } from '../../user'; // 共通の型
 import './ss.css';
 
 export default function UserInfo() {
   const navigate = useNavigate();
 
-  // 送金するボタンを押したときの処理（必要に応じてパスを変更してください）
-  const handleTransferClick = () => {
-    navigate(PATHS.USER_LIST); // 送金相手選択画面へ遷移
-  }; 
-
-  // 請求するボタンを押したときの処理
-  const handleRequestClick = () => {
-    navigate(PATHS.USER_LIST); // 請求相手選択画面（またはユーザーリスト）へ遷移
-  };
+  // 自分のユーザー情報を保持するステート
+  const [currentUser, setCurrentUser] = useState<user | null>(null);
 
   // 残高を表示しているかどうかを管理するステート（初期値: true = 表示）
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
-  const total = 50000;
 
   // 仮の送金履歴データ
   const [historyList] = useState([
@@ -26,6 +21,28 @@ export default function UserInfo() {
     { id: 2, name: '鈴木 花子', amount: 5500 },
     { id: 3, name: '佐藤 一郎', amount: 10000 },
   ]);
+
+  // 画面が表示されたときに自分のIDを取得し、それを使ってバックエンドからデータを取得する
+  useEffect(() => {
+    const myId = getMyUserId(); // 関数を実行してIDを取得する
+    getUser(myId)
+      .then((data: user) => {
+        setCurrentUser(data);
+      })
+      .catch((err) => {
+        console.error("ユーザー情報の取得に失敗しました", err);
+      });
+  }, []);
+
+  // 送金するボタンを押したときの処理
+  const handleTransferClick = () => {
+    navigate(PATHS.USER_LIST); 
+  }; 
+
+  // 請求するボタンを押したときの処理
+  const handleRequestClick = () => {
+    navigate(PATHS.USER_LIST); 
+  };
 
   return (
     <div className="container">
@@ -36,18 +53,22 @@ export default function UserInfo() {
         <div className="user-header">
           <div className="avatar">
             <img 
-              src="https://via.placeholder.com/60" 
+              src={currentUser ? currentUser.userIconURL : "https://via.placeholder.com/60"} 
               alt="ユーザアイコン" 
               className="avatar-img" 
             />
           </div>
-          <h2 className="user-name">サンプル 氏名</h2>
+          <h2 className="user-name">
+            {currentUser ? currentUser.name : '読み込み中...'}
+          </h2>
         </div>
 
         {/* 口座番号 */}
         <div className="account-section">
           <span className="account-label">口座番号</span>
-          <span className="account-number">0000000</span>
+          <span className="account-number">
+            {currentUser ? currentUser.accountNumber : '------'}
+          </span>
         </div>
 
         {/* 預金残高ボックス */}
@@ -55,7 +76,11 @@ export default function UserInfo() {
           <span className="balance-title">預金残高</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className="balance-value">
-              {isBalanceVisible ? `${total.toLocaleString()}円` : '＊＊＊＊＊＊'}
+              {currentUser ? (
+                isBalanceVisible ? `${currentUser.balance.toLocaleString()}円` : '＊＊＊＊＊＊'
+              ) : (
+                '読み込み中...'
+              )}
             </span>
             <span 
               onClick={() => setIsBalanceVisible(!isBalanceVisible)} 
