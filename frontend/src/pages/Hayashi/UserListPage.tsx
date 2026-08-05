@@ -1,69 +1,57 @@
 // src/pages/Hayashi/UserListPage.tsx
 import React, { useEffect, useState } from 'react';
-import { User } from './User';
+import { useNavigate } from "react-router-dom";
+import { user } from '../../user';
 import { getUsers } from './api/userApi';
-
+import "./UserListPage.css";
 export function UserListPage() {
-  const [userList, setUserList] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [userList, setUserList] = useState<user[]>([]);
+  const navigate = useNavigate();
 
+  //useEffect(() => {},[])のときは最初に一度だけ実行される
   useEffect(() => {
     // 画面表示時に getUsers() を呼び出す
+
     getUsers()
+      //thenはデータを取得できたときに動く
       .then((data) => {
         setUserList(data);
-        setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
-        setLoading(false);
+        console.error("顧客データの取得に失敗しました");
       });
   }, []);
 
-  if (loading) return <div>ユーザー一覧を読み込み中...</div>;
-  if (error) return <div style={{ color: 'red' }}>エラー: {error}</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>ユーザー一覧</h2>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {userList.map((user) => (
-          <li
-            key={user.accountNumber} // または user.id
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '15px',
-              padding: '12px',
-              borderBottom: '1px solid #eee',
-            }}
-          >
-            {/* userIconURL から画像を表示 */}
-            <img
-              src={user.userIconURL}
-              alt={user.name}
-              style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-              }}
-            />
-            <div>
-              <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
-                {user.name}
-              </div>
-              <div style={{ color: '#666', fontSize: '0.9rem' }}>
-                口座番号: {user.accountNumber}
-              </div>
-              <div style={{ color: '#333', fontSize: '0.95rem' }}>
-                残高: {user.balance.toLocaleString()} 円
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+    // スマホ枠を画面中央に置くための外側
+    <div className='phone-container'>
+      <div className='phone'>
+        <h2 className='phone-title'>送金相手を選択</h2>
+        <ul className='user-list'>
+          {userList.map((user) => (
+            <li
+              key={user.accountNumber} // または user.id
+              className='user-list-item'
+            >
+              <button className='user-button' onClick={() => {
+                // 選択された顧客情報を state に載せて送金画面へ渡す
+                navigate('/transfer', { state: { user } });
+              }}>
+                {/* userIconURL から画像を表示 */}
+                <img
+                  src={user.userIconURL}
+                  alt={user.name}
+                  className='user-icon'
+                />
+                <div className='user-name'>
+                  {user.name}
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
