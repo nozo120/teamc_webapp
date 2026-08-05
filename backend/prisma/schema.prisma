@@ -4,18 +4,20 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 generator client {
   provider = "prisma-client-js"
 }
 
 // 1. ユーザーテーブル
 model User {
-  id            Int    @id @default(autoincrement())
-  userIconURL   String?
+  id Int @id @default(autoincrement())
+  name String
   accountNumber String @unique
-  name          String
-  balance       Int    @default(50000)
+  balance Int
+  userIconURL String?
+
+
+}
 
   // 送金履歴
   sentTransactions     Transaction[] @relation("SentTransactions")
