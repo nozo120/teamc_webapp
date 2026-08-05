@@ -2,7 +2,7 @@
  * DBのデータを扱いやすいようにまとめたもの
  */
 export type user = {
-    id:number;
+    id:string;
     userIconURL:string;
     accountNumber:number;
     name:string;
