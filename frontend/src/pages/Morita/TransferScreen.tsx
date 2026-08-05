@@ -2,6 +2,7 @@
 import { useState } from "react";//入力中のあたいをほじするもの
 import { useNavigate, useLocation } from "react-router-dom";//別の画面に遷移するための関数取得、前画面から受け取るやつ
 import type { TransferScreenState } from "./types";
+import { PATHS } from "../../routes/paths";
 import "./TransferScreen.css";
 
 // 送金APIのエンドポイント
@@ -38,13 +39,13 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       <div className="container">
         <div className="phone-frame full-page">
           <p>送金先が選択されていません</p>
-          <button onClick={() => navigate("/")}>送金先を選び直す</button>
+          <button onClick={() => navigate(PATHS.HOME)}>送金先を選び直す</button>
         </div>
       </div>
     );
   }
 
-  const recipient = state.recipient;
+  const user = state.recipient;
 
   // -----------------------------------------------------------
   // 入力文字列を整数に変換（10進数として読む）
@@ -81,7 +82,7 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           senderId,
-          receiverId: Number(recipient.id),
+          receiverId: user.id,
           amount,
           message,
         }),
@@ -91,8 +92,8 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         throw new Error("送金に失敗しました");
       }
 
-      navigate("/transfer-complete", {
-        state: { recipient, amount, message },
+      navigate(PATHS.COMPLETE, {
+        state: { recipient: user, amount, message },
       });
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "送金に失敗しました");
@@ -112,8 +113,8 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       {/* 送金先（前の画面から受け取った名前とアイコン） */}
       <p className="section-label">送金先</p>
       <div className="recipient-area">
-        <img className="recipient-image" src={recipient.imageUrl} alt={recipient.name} />
-        <span className="recipient-name">{recipient.name}</span>
+        <img className="recipient-image" src={user.userIconURL} alt={user.name} />
+        <span className="recipient-name">{user.name}</span>
       </div>
 
       {/* 送金上限額（＝所持金） */}
