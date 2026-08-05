@@ -5,8 +5,16 @@ import { user } from '../../user';
 import { PATHS } from '../../routes/paths';
 import { getUsers } from '../../utils/userApi';
 import { getMyUserId } from '../../utils/myUserId';
+import "../../styles/phone.css";
 import "./UserListPage.css";
-export function UserListPage() {
+
+type Props = {
+  // この一覧を「送金相手を選ぶため」に使うのか「請求先を選ぶため」に使うのか
+  // 選んだあとの遷移先と渡すデータが変わるので、呼び出し側から指定してもらう
+  mode: 'transfer' | 'invoice';
+};
+
+export function UserListPage({ mode }: Props) {
   const [userList, setUserList] = useState<user[]>([]);
   const navigate = useNavigate();
 
@@ -32,7 +40,13 @@ export function UserListPage() {
     // スマホ枠を画面中央に置くための外側
     <div className='phone-container'>
       <div className='phone'>
-        <h2 className='phone-title'>送金相手を選択</h2>
+        {/* 1つ前の画面（マイページ）に戻る */}
+        <button className='phone-back-button' onClick={() => navigate(-1)}>
+          ← 戻る
+        </button>
+        <h2 className='phone-title'>
+          {mode === 'invoice' ? '請求先を選択' : '送金相手を選択'}
+        </h2>
         <ul className='user-list'>
           {userList
             // 自分自身には送金できないのでリストから除外する
@@ -44,8 +58,14 @@ export function UserListPage() {
               className='user-list-item'
             >
               <button className='user-button' onClick={() => {
-                // 選択された顧客情報を state に載せて送金画面へ渡す
-                navigate(PATHS.TRANSFER, { state: { recipient:user } });
+                if (mode === 'invoice') {
+                  // 請求リンク作成画面へは顧客IDだけ渡す
+                  // json-server は id を文字列で返すので数値に直す
+                  navigate(PATHS.INVOICE_CREATE, { state: { recipientId: Number(user.id) } });
+                } else {
+                  // 選択された顧客情報を state に載せて送金画面へ渡す
+                  navigate(PATHS.TRANSFER, { state: { recipient:user } });
+                }
               }}>
                 {/* userIconURL から画像を表示 */}
                 <img

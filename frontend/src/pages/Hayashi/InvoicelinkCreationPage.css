@@ -1,0 +1,14 @@
+/* InvoicelinkCreationPage.css */
+/* スマホ枠そのものの見た目は src/styles/phone.css を参照 */
+
+.invoice-label {
+    font-size: 14px;
+    color: #555;
+    margin: 16px 0 8px;
+}
+
+.invoice-preview {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #555;
+}

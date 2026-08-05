@@ -36,12 +36,12 @@ export default function UserInfo() {
 
   // 送金するボタンを押したときの処理
   const handleTransferClick = () => {
-    navigate(PATHS.USER_LIST); 
-  }; 
+    navigate(PATHS.USER_LIST); // 送金相手選択画面へ遷移
+  };
 
   // 請求するボタンを押したときの処理
   const handleRequestClick = () => {
-    navigate(PATHS.USER_LIST); 
+    navigate(PATHS.INVOICE_USER_LIST); // 請求先選択画面へ遷移
   };
 
   return (
