@@ -2,10 +2,9 @@
 import { useState } from "react";//入力中のあたいをほじするもの
 import { useNavigate, useLocation } from "react-router-dom";//別の画面に遷移するための関数取得、前画面から受け取るやつ
 import type { TransferScreenState } from "./types";
+import { remit } from "./api/remitApi";
+import { PATHS } from "../../routes/paths";
 import "./TransferScreen.css";
-
-// 送金APIのエンドポイント
-const TRANSFER_API_URL = "http://localhost:3001/api/remit";
 
 type Props = {
   maxAmount: number; // 送金上限額（自分の所持金）
@@ -76,22 +75,14 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
     setSubmitError(null);
 
     try {
-      const res = await fetch(TRANSFER_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          senderId,
-          receiverId: Number(recipient.id),
-          amount,
-          message,
-        }),
+      await remit({
+        senderId,
+        receiverId: Number(recipient.id),
+        amount,
+        message,
       });
 
-      if (!res.ok) {
-        throw new Error("送金に失敗しました");
-      }
-
-      navigate("/transfer-complete", {
+      navigate(PATHS.COMPLETE, {
         state: { recipient, amount, message },
       });
     } catch (err) {
@@ -112,7 +103,9 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       {/* 送金先（前の画面から受け取った名前とアイコン） */}
       <p className="section-label">送金先</p>
       <div className="recipient-area">
-        <img className="recipient-image" src={recipient.imageUrl} alt={recipient.name} />
+        <div className="recipient-avatar">
+          <img src={recipient.imageUrl} alt={recipient.name} />
+        </div>
         <span className="recipient-name">{recipient.name}</span>
       </div>
 
