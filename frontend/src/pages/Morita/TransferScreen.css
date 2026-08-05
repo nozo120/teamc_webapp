@@ -59,9 +59,20 @@
 /* 送金上限額の行 */
 .balance-row {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 13px; color: #4b5563; margin-top: 12px;
+  font-size: 13px; color: #4b5563; margin-top: 8px;
 }
 .balance-value { font-weight: bold; color: #1f2937; }
+.balance-value.short { color: #C1272D; }
+/* よく使う金額のチップ */
+.quick-amounts {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px; margin-top: 12px;
+}
+.quick-amount-button {
+  padding: 8px 0; font-size: 13px; cursor: pointer;
+  background: #fff; border: 1px solid #d1d5db; border-radius: 999px; color: #374151;
+}
+.quick-amount-button:hover { background: #f3f4f6; }
 .message-input {
   width: 100%; box-sizing: border-box;
   padding: 11px 12px; border: 1px solid #ccc; border-radius: 6px;
