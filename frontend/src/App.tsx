@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import UserInfo from './pages/Miyazawa/ss';
+import { UserListPage } from './pages/Hayashi/UserListPage';
 
 function App() {
   return (

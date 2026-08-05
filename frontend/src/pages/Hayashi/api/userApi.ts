@@ -1,7 +1,7 @@
 // src/api/userApi.ts
 import { User } from '../User';
 
-const API_URL = 'http://localhost:3000/users';
+const API_URL = 'http://localhost:3010/users';
 
 /**
  * DB (json-server) からユーザー情報の一覧を取得する関数

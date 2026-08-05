@@ -1,0 +1,76 @@
+/* 画面全体（スマホ枠を中央に置くための背景） */
+.phone-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #eef2f5;
+}
+
+/* . を忘れずに付ける */
+.phone {
+    width: 360px;
+    height: 640px;
+    padding: 24px 16px;
+    background-color: #ffffff;
+    border: 8px solid #222;
+    border-radius: 36px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    /* padding と border を width に含める（これが無いと枠が太る） */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.phone-title {
+    font-size: 18px;
+    margin: 0 0 16px;
+    text-align: left;
+    color: #1f2937;
+}
+
+/* 一覧は枠内でスクロールさせる */
+.user-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.user-list-item {
+    border-bottom: 1px solid #eee;
+}
+
+.user-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 8px;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.user-button:hover {
+    background-color: #f3f4f6;
+}
+
+.user-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* 縮まないようにする */
+    flex-shrink: 0;
+}
+
+.user-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #1f2937;
+}
