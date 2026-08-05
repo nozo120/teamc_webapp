@@ -1,7 +1,13 @@
 // types.ts
-// ユーザーの型は frontend/src/user.ts に一本化されている（Hayashiさんが整備）
-import type { user as User } from "../../user";
-export type { User };
+// この画面まわりで使うデータの形をここに集約する
+// 他の画面担当者と「この形で渡す」と合意する対象
+
+// 送金先ユーザー
+export type User = {
+  id: string; // ユーザーID
+  name: string; // 氏名
+  imageUrl: string; // アイコン画像のパス
+};
 
 // 顧客リスト画面 → 金額入力画面 に渡すデータ
 export type TransferScreenState = {
