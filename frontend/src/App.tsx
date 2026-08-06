@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import { PATHS } from './routes/paths';
 import UserInfo from './pages/Miyazawa/ss';
 import { UserListPage } from './pages/Hayashi/UserListPage';
 import { InvoicelinkCreationPage } from './pages/Hayashi/InvoicelinkCreationPage';
+import { LoginPage } from './pages/Hayashi/LoginPage';
 import { getUser } from './utils/userApi';
 import { getMyUserId } from './utils/myUserId';
 // TransferScreen は default export なので { } は付けない
@@ -14,14 +15,20 @@ import PaymentScreen from './pages/Morita/PaymentScreen';
 // RequestScreen は default export なので { } は付けない
 import RequestScreen from './pages/Miyazawa/RequestScreen';
 
-// TODO: ログイン機能ができたら、自分のIDはログイン情報から取得する
-const MY_USER_ID = getMyUserId();
+// ルート定義は BrowserRouter の内側に置く。
+// LoginPage が setMyUserId() で使用者を切り替えるため、
+// useLocation() で画面遷移のたびに再描画させ、そのつど getMyUserId() を読み直している。
+// （BrowserRouter の外側で一度だけ読むと、ログインしても古いIDのままになる）
+function AppRoutes() {
+  const { pathname } = useLocation();
 
-function App() {
+  const MY_USER_ID = getMyUserId();
+
   // 自分の所持金。取得できるまでは null（＝読み込み中）
   const [myBalance, setMyBalance] = useState<number | null>(null);
 
-  // 起動時に一度だけ、自分のユーザー情報をDBから取得する
+  // 画面が変わるたびに取り直す。
+  // ログイン直後の切り替えに追従できるほか、送金後の残高も最新になる
   useEffect(() => {
     getUser(MY_USER_ID)
       .then((me) => {
@@ -30,11 +37,12 @@ function App() {
       .catch(() => {
         console.error('所持金の取得に失敗しました');
       });
-  }, []);
+  }, [pathname, MY_USER_ID]);
 
   return (
-    <BrowserRouter>
       <Routes>
+        {/* IDを入力して使用者を切り替える画面 */}
+        <Route path={PATHS.LOGIN} element={<LoginPage />} />
         <Route path={PATHS.HOME} element={<UserInfo />} />
         {/* 同じ一覧を、送金相手を選ぶ用と請求先を選ぶ用で使い分ける */}
         <Route path={PATHS.USER_LIST} element={<UserListPage mode='transfer' />} />
@@ -67,6 +75,13 @@ function App() {
         {/* 定義していないURLはホームに戻す */}
         <Route path="*" element={<Navigate to={PATHS.HOME} replace />} />
       </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   );
 }
