@@ -1,0 +1,58 @@
+/* スマホ枠（.phone-container / .phone / .phone-title）は src/styles/phone.css に置いている */
+
+.login-description {
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.login-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #374151;
+}
+
+.login-input {
+    width: 100%;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #1f2937;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.login-error {
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: #dc2626;
+}
+
+.login-button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 24px;
+    box-sizing: border-box;
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-button:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.login-button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}

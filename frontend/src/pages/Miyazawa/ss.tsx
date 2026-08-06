@@ -14,7 +14,7 @@ export default function UserInfo() {
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [historyList, setHistoryList] = useState<TransactionHistory[]>([]);
   
-  // 🌟 モーダルの開閉を管理するステート（ここで定義します）
+  // モーダルの開閉を管理するステート
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const currentUserId = getMyUserId();
@@ -53,9 +53,7 @@ export default function UserInfo() {
     <div className="container">
       <div className="phone-frame">
         
-       
-
-           {/* トップバー */}
+        {/* トップバー */}
         <div className="yucho-top-bar">
           <div className="yucho-brand">
             <span className="yucho-logo-mark">口座</span>
@@ -63,12 +61,12 @@ export default function UserInfo() {
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {/* 🌟 ログアウトボタン（SVG記号に変更） */}
+            {/* 🌟 ログアウトボタン（クリックでログイン画面へ遷移） */}
             <div 
               className="yucho-help-icon" 
               onClick={() => {
-                console.log('ログアウトボタンが押されました');
-                // 後で navigate(PATHS.LOGIN) などを記述
+                localStorage.removeItem('myUserId');
+                navigate(PATHS.LOGIN);
               }}
               style={{ 
                 cursor: 'pointer', 
@@ -105,8 +103,6 @@ export default function UserInfo() {
             </div>
           </div>
         </div>
-
-       
 
         {/* ユーザプロフィールエリア */}
         <div className="user-header">

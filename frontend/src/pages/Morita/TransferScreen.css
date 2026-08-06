@@ -14,8 +14,11 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border: 8px solid #222;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow: hidden;
 }
+/* スクロールはこの内側だけで起こす。トーストは外側(.phone-frame)に置くことで、
+   中がどれだけスクロールされていても常に同じ位置に固定表示される */
+.phone-scroll { height: 100%; overflow-y: auto; }
 .full-page { padding: 28px 20px 16px; }
 .back-button {
   display: inline-flex; align-items: center; gap: 4px;
@@ -111,6 +114,29 @@
   margin: 0; word-break: break-all;
 }
 .payment-time { font-size: 11px; color: #9ca3af; margin: 14px 0 0; }
+/* 請求元の読み込み中に光らせるスケルトン */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.25) 25%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.25) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shine 1.3s ease-in-out infinite;
+}
+.hero-avatar.skeleton { background-color: rgba(255, 255, 255, 0.25); }
+.skeleton-text { display: inline-block; width: 140px; height: 14px; border-radius: 4px; }
+@keyframes skeleton-shine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+/* 請求元の情報が読み込めたら、ふわっと現れる */
+.hero-recipient-in { animation: fade-up-hero 0.3s ease-out both; }
+@keyframes fade-up-hero {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .calc-pad {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 6px; margin-top: 8px;

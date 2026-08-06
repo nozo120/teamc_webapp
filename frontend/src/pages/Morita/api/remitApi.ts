@@ -1,6 +1,6 @@
 // remitApi.ts
-// 送金処理（json-server / バックエンド連携版）
 
+// 送金処理（本物のバックエンドAPI版）
 const API_BASE = "http://localhost:3001";
 
 type RemitParams = {
@@ -10,7 +10,8 @@ type RemitParams = {
   message?: string;
 };
 
-// json-server の users から1件取得する
+
+
 const fetchUser = async (id: number) => {
   const res = await fetch(`${API_BASE}/users/${id}`);
   if (!res.ok) throw new Error("ユーザー情報の取得に失敗しました");
@@ -35,7 +36,7 @@ export const fetchUserByAccountNumber = async (accountNumber: string) => {
   return byId.json();
 };
 
-// 送金処理（バックエンドの Express / Prisma トランザクションを呼び出す）
+// 送金処理(バックエンドの Express / Prisma トランザクションを呼び出す)
 export const remit = async ({ senderId, receiverId, amount, message }: RemitParams) => {
   console.log("送金データ", {
     senderId,

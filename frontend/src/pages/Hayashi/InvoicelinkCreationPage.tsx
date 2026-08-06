@@ -74,6 +74,14 @@ export function InvoicelinkCreationPage() {
         // スマホ枠を画面中央に置くための外側
         <div className='phone-container'>
             <div className='phone'>
+                {/* 1つ前の画面（請求先の選択）に戻る。送信中は押せないようにする */}
+                <button
+                    className='phone-back-button'
+                    onClick={() => navigate(-1)}
+                    disabled={isSubmitting}
+                >
+                    ← 戻る
+                </button>
                 <h2 className='phone-title'>請求リンクを作成</h2>
 
                 <p className='invoice-label'>請求金額</p>
