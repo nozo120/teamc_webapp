@@ -1,6 +1,6 @@
 // src/utils/historyApi.ts
 
-const API_BASE = 'http://localhost:3012'; // ※必要に応じてポート番号を変更してください
+const API_BASE = 'http://localhost:3001'; // ※必要に応じてポート番号を変更してください
 
 export type TransactionHistory = {
     id: number;
