@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
 import './request.css';
+import { createRequest } from '../utils/requestApi';
 
 export default function RequestScreen() {
-  const [generatedLink, setGeneratedLink] = useState("https://example.com/pay?id=123456");
+  const [generatedLink, setGeneratedLink] = useState("読み込み中...");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -17,15 +18,25 @@ export default function RequestScreen() {
   };
 
   useEffect(() => {
-    // 起動したバックエンドのURLを指定
-    fetch('http://localhost:3001/api/requests') // ※APIのパスは実際のルーティングに合わせて調整してください
-      .then((res) => res.json())
-      .then((data) => {
-        setGeneratedLink(data.link);
-      })
-      .catch((err) => {
+    // バックエンドへ請求データを送信し、発行されたリンクを取得する
+    const fetchRequestLink = async () => {
+      try {
+        // ※必要に応じて金額やユーザーIDを変更・あるいはprops等から受け取るようにしてください
+        const result = await createRequest({
+          amount: 1000,
+          requesterId: 1,
+          payerId: 2,
+          message: '請求のテストメッセージ',
+        });
+        
+        // バックエンドから返ってきた result.requestLink をセットする
+        setGeneratedLink(result.requestLink);
+      } catch (err) {
         console.error("通信エラー:", err);
-      });
+        setGeneratedLink("請求リンクの取得に失敗しました");
+      }
+    };
+    fetchRequestLink();
   }, []);
 
   return (
