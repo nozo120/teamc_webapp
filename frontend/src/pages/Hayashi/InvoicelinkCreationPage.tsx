@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { InputNumCard } from './inputs/InputNumCard';
 import { InputTextCard } from './inputs/InputTextCard';
+import { createRequest, CreateRequestResult } from '../../utils/requestApi';
+import { getMyUserId } from '../../utils/myUserId';
 import '../../styles/phone.css';
 import './InvoicelinkCreationPage.css';
 
@@ -30,6 +32,41 @@ export function InvoicelinkCreationPage() {
     // URL直打ち・リロードだと state が null になり画面が落ちるため、動作確認用に仮のIDを使う
     const recipientId = state?.recipientId ?? 1;
 
+    // 送信中かどうか。連打で二重登録されるのを防ぐ
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    // 送信に失敗したときのメッセージ。成功時・未送信時は null
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
+    // 登録に成功して返ってきた請求。完了画面ができるまでの仮表示に使う
+    const [result, setResult] = useState<CreateRequestResult | null>(null);
+
+    // 金額が入っていないうちは押せないようにする
+    const canSubmit = amount > 0 && !isSubmitting;
+
+    // 「作成」ボタンを押したとき
+    const handleSubmit = async () => {
+        if (!canSubmit) return;
+
+        setIsSubmitting(true);
+        setSubmitError(null);
+
+        try {
+            const created = await createRequest({
+                amount,
+                message,
+                requesterId: getMyUserId(), // 請求する人（自分）
+                payerId: recipientId,       // 支払う人（請求先）
+            });
+            setResult(created);
+        } catch (err) {
+            setSubmitError(err instanceof Error ? err.message : '請求の登録に失敗しました');
+        } finally {
+            // 成功・失敗どちらでもボタンを押せる状態に戻す
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         // スマホ枠を画面中央に置くための外側
         <div className='phone-container'>
@@ -44,10 +81,29 @@ export function InvoicelinkCreationPage() {
                 {/* 入力が変わるたびに onTextChanged が呼ばれ、message が更新される */}
                 <InputTextCard onTextChanged={(value) => setMessage(value)} />
 
+                {/* 送信に失敗したときだけ表示する */}
+                {submitError && <p className='invoice-error'>{submitError}</p>}
+
+                <button
+                    className='invoice-submit-button'
+                    onClick={handleSubmit}
+                    disabled={!canSubmit}
+                >
+                    {isSubmitting ? '作成中...' : '請求リンクを作成'}
+                </button>
+
                 {/* 受け取れているか確認するための仮表示 */}
                 <p className='invoice-preview'>請求先ID: {recipientId}</p>
                 <p className='invoice-preview'>入力中の金額: {amount}円</p>
                 <p className='invoice-preview'>入力中のメッセージ: {message}</p>
+
+                {/* TODO: 完了画面ができたら、この仮表示を消して navigate に置き換える */}
+                {result && (
+                    <>
+                        <p className='invoice-preview'>登録された請求ID: {result.id}</p>
+                        <p className='invoice-preview'>請求リンク: {result.requestLink}</p>
+                    </>
+                )}
             </div>
         </div>
     );
