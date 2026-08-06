@@ -19,10 +19,10 @@ export const createRequestLink = async (
     `${String(createdAt.getSeconds()).padStart(2, "0")}-` +
     `${String(createdAt.getMilliseconds()).padStart(3, "0")}`;
 
-  // 支払い画面は React のページなので、配信元はフロント(3000)。
-  // バックエンド(3001)には /payment ルートが無いため、3001 のままだと 404 になる
+  // ホスト名は付けずパスだけを返す。
+  // フロントのポートは人によって違うため、表示する側で window.location.origin を足す
   const requestLink =
-    `http://localhost:3000/payment/?time=${formattedTime}` +
+    `/payment/?time=${formattedTime}` +
     `&kozaBango=${requesterId}` +
     `&payerId=${payerId}` +
     `&kingaku=${amount}` +
@@ -31,7 +31,7 @@ export const createRequestLink = async (
   
 
   return {
-    id: request.id,
+    id: requestId,
     requesterId,
     payerId,
     amount,
