@@ -8,6 +8,7 @@ export async function dealing(senderId: number, receiverId: number, amount: numb
 const receiver = await prisma.user.findUnique({where: {id: receiverId}});
 if (sender === null || receiver === null)
 {throw new Error( "該当する送信元または宛先が見つかりません")}
+
 else {const new_sender_amount = sender.balance - amount;
     const new_receiver_amount = receiver.balance + amount;
     if (new_sender_amount < 0) {throw new RangeError( "送金額が預金残高を超過しています!")}
