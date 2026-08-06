@@ -1,5 +1,3 @@
-import { prisma } from "../utils/prisma.js";
-
 export const createRequestLink = async (
   amount: number,
   message: string | undefined,
@@ -20,16 +18,14 @@ export const createRequestLink = async (
     `${String(createdAt.getMilliseconds()).padStart(3, "0")}`;
 
   const requestLink =
-    `http://localhost:3001/payment/?time=${formattedTime}` +
+    `http://localhost:3002/payment/?time=${formattedTime}` +
     `&kozaBango=${requesterId}` +
     `&payerId=${payerId}` +
     `&kingaku=${amount}` +
     `&message=${encodeURIComponent(message ?? "")}`;
 
-  
-
   return {
-    id: request.id,
+    id: requestId,
     requesterId,
     payerId,
     amount,
