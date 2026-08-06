@@ -5,21 +5,21 @@
       "userIconURL": "/images/men/man1.png",
       "accountNumber": 1234567,
       "name": "ヤマダ タロウ",
-      "balance": 26656
+      "balance": 26654
     },
     {
       "id": "2",
       "userIconURL": "/images/men/man2.png",
       "accountNumber": 7654321,
       "name": "スズキ イチロウ",
-      "balance": 2023344
+      "balance": 2023345
     },
     {
       "id": "3",
       "userIconURL": "/images/men/man3.png",
       "accountNumber": 7654321,
       "name": "スズキ ケイタ",
-      "balance": 1800000
+      "balance": 1800001
     },
     {
       "id": "4",
