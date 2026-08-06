@@ -17,6 +17,10 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+import { TransactionController } from './controllers/transactionController.js';
+// 画面が開いたときにフロントから呼ばれるエンドポイント
+app.get('/history', TransactionController.getTransactions);
+
 // 動作確認用API
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Team C バックエンドサーバー起動中！' });
@@ -33,14 +37,9 @@ app.listen(PORT, () => {
 // ② 送金APIのエンドポイントを追加
 app.post('/api/remit', handleRemit);
 
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-
-
-
 app.use("/request", requestRoute);
 
 // ユーザー情報API（json-server(3010) の /users を置き換えるもの）
 app.use("/users", userRoute);
+
+

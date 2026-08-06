@@ -2,18 +2,6 @@
 
 const API_BASE = 'http://localhost:3001'; // ※必要に応じてポート番号を変更してください
 
-// バックエンドから返ってくる生のトランザクションデータの型（DB構造に合わせる）
-type RawTransaction = {
-    id: number;
-    senderId: number;
-    receiverId: number;
-    amount: number;
-    createdAt: string;
-    // 相手の名前や自身の名前がバックエンドから結合されてくる場合の型定義（必要に応じて調整）
-    sender?: { name: string };
-    receiver?: { name: string };
-};
-
 export type TransactionHistory = {
     id: number;
     userId: number; // どのユーザーの履歴か
