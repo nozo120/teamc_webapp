@@ -1,11 +1,5 @@
 // remitApi.ts
-// 送金処理（json-server版）
-//
-// 本来この処理はバックエンド(POST /api/remit)が1回で行うべきもの。
-// backend がまだ安定して動かない（app.listen重複・ポート衝突）間の代替として、
-// json-server に対して「残高を読む → 計算する → 書き戻す」を手動で行っている。
-// backend が安定したら、remit関数の中身を fetch("/api/remit") 1本に差し替える。
-
+// 送金処理（本物のバックエンドAPI版）
 const API_BASE = "http://localhost:3001";
 
 type RemitParams = {
@@ -14,7 +8,6 @@ type RemitParams = {
   amount: number;
   message?: string;
 };
-
 
 // 口座番号からユーザーを1件探す（必要に応じてバックエンドのユーザー検索APIに繋ぎ替え）
 const fetchUser = async (id: number) => {
@@ -46,7 +39,7 @@ export const fetchUserByAccountNumber = async (accountNumber: string) => {
   return byId.json();
 };
 
-// 送金処理（バックエンドの Express / Prisma トランザクションを呼び出す）
+// 送金処理(バックエンドの Express / Prisma トランザクションを呼び出す)
 export const remit = async ({ senderId, receiverId, amount, message }: RemitParams) => {
   console.log("送金データ", {
     senderId,

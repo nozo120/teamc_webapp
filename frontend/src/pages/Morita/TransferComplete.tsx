@@ -27,9 +27,11 @@ const TransferComplete: React.FC = () => {
   if (!state || !state.recipient) {
     return (
       <div className="container">
-        <div className="phone-frame full-page">
-          <p>送金情報が見つかりません</p>
-          <button onClick={() => navigate(PATHS.HOME)}>ホームに戻る</button>
+        <div className="phone-frame">
+          <div className="phone-scroll full-page">
+            <p>送金情報が見つかりません</p>
+            <button onClick={() => navigate(PATHS.HOME)}>ホームに戻る</button>
+          </div>
         </div>
       </div>
     );
@@ -44,7 +46,8 @@ const TransferComplete: React.FC = () => {
 
   return (
     <div className="container">
-      <div className="phone-frame complete-page">
+      <div className="phone-frame">
+      <div className="phone-scroll complete-page">
         <div className="complete-avatar-wrap">
           <div className="complete-avatar">
             <img src={getIconUrl(user)} alt={user.name} />
@@ -70,6 +73,7 @@ const TransferComplete: React.FC = () => {
         <button className="submit-button" onClick={() => navigate(PATHS.HOME)}>
           ホームに戻る
         </button>
+      </div>
       </div>
     </div>
   );
