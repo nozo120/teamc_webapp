@@ -5,10 +5,10 @@ interface RequestBody {
   amount: number;
   message?: string;
   requesterId: number;
-  payerId?: number | null;
+  payerId: number;
 }
 
-export const registerRequest = (
+export const registerRequest = async (
   req: Request<{}, {}, RequestBody>,
   res: Response
 ) => {
@@ -21,7 +21,7 @@ export const registerRequest = (
   } = req.body;
 
 
-  const requestLink = createRequestLink(
+  const requestLink = await createRequestLink(
     amount,
     message,
     requesterId,
