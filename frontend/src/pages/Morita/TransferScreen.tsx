@@ -5,7 +5,11 @@ import type { TransferScreenState } from "./types";
 import { getIconUrl } from "./types";
 import { remit } from "./api/remitApi";
 import { PATHS } from "../../routes/paths";
+import Toast from "./Toast";
 import "./TransferScreen.css";
+
+// メッセージ欄に入力できる最大文字数
+const MESSAGE_MAX_LENGTH = 100;
 
 type Props = {
   maxAmount: number; // 送金上限額（自分の所持金）
@@ -303,16 +307,18 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       )}
 
       {/* メッセージ（任意） */}
-      <p className="section-label">メッセージ（任意）</p>
+      <div className="message-header">
+        <p className="section-label">メッセージ（任意）</p>
+        <span className="message-count">{message.length}/{MESSAGE_MAX_LENGTH}</span>
+      </div>
       <input
         type="text"
         placeholder="メッセージ"
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={(e) => setMessage(e.target.value.slice(0, MESSAGE_MAX_LENGTH))}
+        maxLength={MESSAGE_MAX_LENGTH}
         className="message-input"
       />
-
-      {submitError && <p className="error-text">{submitError}</p>}
 
       {/* 送金ボタン */}
       <button
@@ -320,8 +326,10 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         onClick={handleSubmit}
         disabled={!canSubmit || isSubmitting}
       >
-        {isSubmitting ? "送金中..." : "送金"}
+        {isSubmitting ? <span className="button-spinner" /> : "送金"}
       </button>
+
+      {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
     </div>
     </div>
   );

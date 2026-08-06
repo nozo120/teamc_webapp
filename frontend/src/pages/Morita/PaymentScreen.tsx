@@ -18,6 +18,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import type { User } from "./types";
 import { remit, fetchUserByAccountNumber } from "./api/remitApi";
 import { PATHS } from "../../routes/paths";
+import Toast from "./Toast";
 import "./TransferScreen.css";
 
 type Props = {
@@ -157,15 +158,15 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
 
         {requestedAt && <p className="payment-time">請求日時 {requestedAt}</p>}
 
-        {submitError && <p className="error-text">{submitError}</p>}
-
         <button
           className={canSubmit ? "submit-button" : "submit-button disabled"}
           onClick={handlePay}
           disabled={!canSubmit}
         >
-          {isSubmitting ? "支払い中..." : "支払う"}
+          {isSubmitting ? <span className="button-spinner" /> : "支払う"}
         </button>
+
+        {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
       </div>
     </div>
   );
