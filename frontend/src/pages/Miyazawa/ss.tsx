@@ -1,102 +1,157 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { PATHS } from '../../routes/paths';
+import { getUser } from '../../utils/userApi';
+import { getMyUserId } from '../../utils/myUserId';
+import { getTransactionHistory, TransactionHistory } from '../../utils/historyApi';
+import { user } from '../../user';
 import './ss.css';
 
 export default function UserInfo() {
   const navigate = useNavigate();
 
-  // 送金するボタンを押したときの処理（必要に応じてパスを変更してください）
-  const handleTransferClick = () => {
-    navigate(PATHS.USER_LIST); // 送金相手選択画面へ遷移
-  }; 
+  const [currentUser, setCurrentUser] = useState<user | null>(null);
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
-  // 請求するボタンを押したときの処理
-  const handleRequestClick = () => {
-    navigate(PATHS.USER_LIST); // 請求相手選択画面（またはユーザーリスト）へ遷移
+  // 取引履歴用のステート
+  const [historyList, setHistoryList] = useState<TransactionHistory[]>([]);
+
+  useEffect(() => {
+    const myId = getMyUserId();
+
+    // ユーザー情報の取得
+    getUser(myId)
+      .then((data: user) => {
+        setCurrentUser(data);
+      })
+      .catch((err: Error) => {
+        console.error("ユーザー情報の取得に失敗しました", err);
+      });
+
+    // 入出金履歴の取得（型を明示）
+    getTransactionHistory(myId)
+      .then((data: TransactionHistory[]) => {
+        setHistoryList(data);
+      })
+      .catch((err: Error) => {
+        console.error("入出金履歴の取得に失敗しました", err);
+      });
+  }, []);
+
+  const handleTransferClick = () => {
+    navigate(PATHS.USER_LIST);
   };
 
-  // 残高を表示しているかどうかを管理するステート（初期値: true = 表示）
-  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
-  const total = 50000;
-
-  // 仮の送金履歴データ
-  const [historyList] = useState([
-    { id: 1, name: '山田 太郎', amount: 3000 },
-    { id: 2, name: '鈴木 花子', amount: 5500 },
-    { id: 3, name: '佐藤 一郎', amount: 10000 },
-  ]);
+  const handleRequestClick = () => {
+    navigate(PATHS.INVOICE_USER_LIST);
+  };
 
   return (
     <div className="container">
-      {/* スマホの画面枠 */}
       <div className="phone-frame">
         
-        {/* ユーザヘッダー（アイコン ＋ 氏名） */}
+        {/* トップバー */}
+        <div className="yucho-top-bar">
+          <div className="yucho-brand">
+            <span className="yucho-logo-mark">口座</span>
+            <span className="yucho-app-title">スマート決済アプリ</span>
+          </div>
+          <div className="yucho-help-icon">?</div>
+        </div>
+
+        {/* ユーザプロフィールエリア */}
         <div className="user-header">
           <div className="avatar">
             <img 
-              src="https://via.placeholder.com/60" 
+              src={currentUser ? currentUser.userIconURL : "https://via.placeholder.com/60"} 
               alt="ユーザアイコン" 
               className="avatar-img" 
             />
           </div>
-          <h2 className="user-name">サンプル 氏名</h2>
-        </div>
-
-        {/* 口座番号 */}
-        <div className="account-section">
-          <span className="account-label">口座番号</span>
-          <span className="account-number">0000000</span>
+          <div className="user-meta">
+            <span className="user-greeting">ご契約者さま</span>
+            <h2 className="user-name">
+              {currentUser ? currentUser.name : '読み込み中...'} 様
+            </h2>
+          </div>
         </div>
 
         {/* 預金残高ボックス */}
         <div className="balance-box">
-          <span className="balance-title">預金残高</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="balance-value">
-              {isBalanceVisible ? `${total.toLocaleString()}円` : '＊＊＊＊＊＊'}
-            </span>
+          <div className="balance-top-row">
+            <span className="balance-title">普通預金残高</span>
             <span 
               onClick={() => setIsBalanceVisible(!isBalanceVisible)} 
-              style={{ cursor: 'pointer', fontSize: '16px' }}
+              className="eye-btn"
               title="残高の表示切替"
             >
-              {isBalanceVisible ? '👁️' : '🙈'}
+              {isBalanceVisible ? '非表示にする' : '表示する'}
             </span>
           </div>
-        </div>
-
-        {/* 送金履歴セクション（タイトル固定・リストのみスクロール） */}
-        <div className="history-section">
-          <p className="history-title">最近の送金履歴</p>
-          <div className="history-list">
-            {historyList.map((item) => (
-              <div key={item.id} className="history-item">
-                <span className="history-name">{item.name}</span>
-                <span className="history-amount">-{item.amount.toLocaleString()}円</span>
-              </div>
-            ))}
+          <div className="balance-value-row">
+            <span className="balance-value">
+              {currentUser ? (
+                isBalanceVisible ? `${currentUser.balance.toLocaleString()}円` : '＊＊＊＊＊＊'
+              ) : (
+                '読み込み中...'
+              )}
+            </span>
+          </div>
+          <div className="balance-footer-row">
+            <span className="account-label-text">口座番号：</span>
+            <span className="account-number-text">{currentUser ? currentUser.accountNumber : '------'}</span>
           </div>
         </div>
 
-        {/* ボタンをまとめるエリア（送金ボタン ＋ 請求ボタン） */}
-        <div className="button-group" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px' }}>
-          
-          {/* 送金するボタン */}
-          <button onClick={handleTransferClick} className="transfer-button" style={{ margin: 0 }}>
-            <span className="button-icon">👝</span>
-            <span className="button-text">送金する</span>
-            <span className="arrow">＞</span>
+        {/* メインアクションボタン（横並び） */}
+        <div className="action-buttons-grid">
+          <button onClick={handleTransferClick} className="action-card transfer-card">
+            <div className="action-icon-circle red-theme">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </div>
+            <div className="action-texts">
+              <span className="action-title">送金する</span>
+              <span className="action-sub">ほかの口座へ</span>
+            </div>
           </button>
 
-          {/* 請求するボタン */}
-          <button onClick={handleRequestClick} className="transfer-button" style={{ margin: 0 }}>
-            <span className="button-icon">✉️</span>
-            <span className="button-text">請求する</span>
-            <span className="arrow">＞</span>
+          <button onClick={handleRequestClick} className="action-card request-card">
+            <div className="action-icon-circle red-theme">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div className="action-texts">
+              <span className="action-title">請求する</span>
+              <span className="action-sub">リンクを作成</span>
+            </div>
           </button>
+        </div>
 
+        {/* 取引履歴セクション */}
+        <div className="history-section">
+          <div className="history-header-area">
+            <span className="history-title">入出金明細 (直近)</span>
+            <span className="history-all">一覧を見る</span>
+          </div>
+          <div className="history-list">
+            {historyList.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#888', fontSize: '14px', marginTop: '20px' }}>
+                明細はありません
+              </p>
+            ) : (
+              historyList.map((item) => (
+                <div key={item.id} className="history-item">
+                  <div className="history-left">
+                    <div className="history-icon-dot"></div>
+                    <div className="history-info">
+                      <span className="history-name">{item.name}</span>
+                      <span className="history-date">{item.date}</span>
+                    </div>
+                  </div>
+                  <span className="history-amount">-{item.amount.toLocaleString()}円</span>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
       </div>

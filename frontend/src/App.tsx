@@ -4,11 +4,15 @@ import './App.css';
 import { PATHS } from './routes/paths';
 import UserInfo from './pages/Miyazawa/ss';
 import { UserListPage } from './pages/Hayashi/UserListPage';
+import { InvoicelinkCreationPage } from './pages/Hayashi/InvoicelinkCreationPage';
 import { getUser } from './utils/userApi';
 import { getMyUserId } from './utils/myUserId';
 // TransferScreen は default export なので { } は付けない
 import TransferScreen from './pages/Morita/TransferScreen';
 import TransferComplete from './pages/Morita/TransferComplete';
+import PaymentScreen from './pages/Morita/PaymentScreen';
+// RequestScreen は default export なので { } は付けない
+import RequestScreen from './pages/Miyazawa/RequestScreen';
 
 // TODO: ログイン機能ができたら、自分のIDはログイン情報から取得する
 const MY_USER_ID = getMyUserId();
@@ -32,7 +36,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path={PATHS.HOME} element={<UserInfo />} />
-        <Route path={PATHS.USER_LIST} element={<UserListPage />} />
+        {/* 同じ一覧を、送金相手を選ぶ用と請求先を選ぶ用で使い分ける */}
+        <Route path={PATHS.USER_LIST} element={<UserListPage mode='transfer' />} />
+        <Route path={PATHS.INVOICE_USER_LIST} element={<UserListPage mode='invoice' />} />
         {/* 送金金額の入力画面。送金先は UserListPage から state で渡される */}
         {/* 所持金が取れるまでは TransferScreen を描画しない（上限0円で表示されるのを防ぐ） */}
         <Route
@@ -43,8 +49,21 @@ function App() {
               : <TransferScreen maxAmount={myBalance} senderId={MY_USER_ID} />
           }
         />
-        {/* TODO: 送金完了画面ができたら element を差し替える */}
+        {/* 送金完了画面 */}
         <Route path={PATHS.COMPLETE} element={<TransferComplete />} />
+        {/* 請求リンクの作成画面 */}
+        <Route path={PATHS.INVOICE_CREATE} element={<InvoicelinkCreationPage />} />
+        {/* 請求リンクの作成完了画面。作成した請求は InvoicelinkCreationPage から state で渡される */}
+        <Route path={PATHS.INVOICE_COMPLETE} element={<RequestScreen />} />
+        {/* 請求リンクから開く支払い画面 */}
+        <Route
+          path="/payment"
+          element={
+            myBalance === null
+              ? <div>読み込み中...</div>
+              : <PaymentScreen maxAmount={myBalance} senderId={MY_USER_ID} />
+          }
+        />
         {/* 定義していないURLはホームに戻す */}
         <Route path="*" element={<Navigate to={PATHS.HOME} replace />} />
       </Routes>

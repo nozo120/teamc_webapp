@@ -25,7 +25,6 @@ model User {
   paidRequests    Request[] @relation("PaidRequests")
 }
 
-
 // 2. 送金履歴テーブル
 model Transaction {
   id         Int      @id @default(autoincrement())
