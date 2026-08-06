@@ -13,7 +13,7 @@ else {const new_sender_amount = sender.balance - amount;
     else { 
         await prisma.$transaction([prisma.user.update({where: {id: senderId}, data: {balance: new_sender_amount}})
             , prisma.user.update({where: {id: receiverId}, data: {balance: new_receiver_amount}}),
-            prisma.transaction.create({data: {senderId, receiverId, amount, message, }})
+            prisma.transaction.create({data: {senderId, receiverId, amount, message}})
         ]);
         
         return "送金が完了しました!"}}
