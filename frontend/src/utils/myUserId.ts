@@ -1,16 +1,21 @@
+// src/utils/myUserId.ts
+
+let userId:number = 1;
+
 /**
  * 使用者のIdを返す関数
- *
- * TODO: ログイン機能ができたら、ログイン情報から取得するように置き換える
- *
- * ログインが無いため通常は 1（山田 太郎）固定。
- * ただし請求→支払いの通しテストでは、請求する人と支払う人を別人にする必要があるため、
- * URLに ?me=2 を付けるとその人として操作できるようにしている。
- *   例) http://localhost:3000/?me=2
- *       http://localhost:3000/payment/?...&kozaBango=1&kingaku=100&me=2
- *
- * @returns 使用者のId
+ * @returns 使用者のId。未設定・不正値のときは DEFAULT_USER_ID
  */
-export function getMyUserId():number{
-    return 1;
+export function getMyUserId(): number {
+    return userId;
 }
+
+/**
+ * 使用者のIdを切り替える
+ *
+ * @param id 切り替え先のユーザーID（1以上の整数）
+ */
+export function setMyUserId(id: number): void {
+    userId = id;
+}
+    
