@@ -50,8 +50,7 @@ export function UserListPage({ mode }: Props) {
         <ul className='user-list'>
           {userList
             // 自分自身には送金できないのでリストから除外する
-            // json-server は id を文字列("1")で返すので、数値に直してから比較する
-            .filter((user) => Number(user.id) !== MY_USER_ID)
+            .filter((user) => user.id !== MY_USER_ID)
             .map((user) => (
             <li
               key={user.accountNumber} // または user.id
@@ -60,16 +59,15 @@ export function UserListPage({ mode }: Props) {
               <button className='user-button' onClick={() => {
                 if (mode === 'invoice') {
                   // 請求リンク作成画面へは顧客IDだけ渡す
-                  // json-server は id を文字列で返すので数値に直す
-                  navigate(PATHS.INVOICE_CREATE, { state: { recipientId: Number(user.id) } });
+                  navigate(PATHS.INVOICE_CREATE, { state: { recipientId: user.id } });
                 } else {
                   // 選択された顧客情報を state に載せて送金画面へ渡す
                   navigate(PATHS.TRANSFER, { state: { recipient:user } });
                 }
               }}>
-                {/* userIconURL から画像を表示 */}
+                {/* userIconURL から画像を表示。DB上 null がありうるので未設定なら代替画像 */}
                 <img
-                  src={user.userIconURL}
+                  src={user.userIconURL ?? "https://via.placeholder.com/60"}
                   alt={user.name}
                   className='user-icon'
                 />
