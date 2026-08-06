@@ -108,11 +108,13 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   if (isInvalidLink || loadError) {
     return (
       <div className="container">
-        <div className="phone-frame full-page">
-          <p>{loadError ?? "請求リンクが正しくありません"}</p>
-          <button className="submit-button" onClick={() => navigate(PATHS.HOME)}>
-            ホームに戻る
-          </button>
+        <div className="phone-frame">
+          <div className="phone-scroll full-page">
+            <p>{loadError ?? "請求リンクが正しくありません"}</p>
+            <button className="submit-button" onClick={() => navigate(PATHS.HOME)}>
+              ホームに戻る
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -120,17 +122,29 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
 
   return (
     <div className="container">
-      <div className="phone-frame full-page">
-        {/* 請求元と請求金額 */}
+      <div className="phone-frame">
+      <div className="phone-scroll full-page">
+        {/* 戻るボタン：ホーム画面に戻る */}
+        <button className="back-button" onClick={() => navigate(PATHS.HOME)}>
+          ← 戻る
+        </button>
+
+        {/* 請求元と請求金額。読み込みが終わったら（requester確定後）ふわっと現れる */}
         <div className={isOverLimit ? "amount-hero over-limit" : "amount-hero"}>
-          <div className="hero-recipient">
-            <div className="hero-avatar">
-              {requester && <img src={requester.imageUrl} alt={requester.name} />}
+          {requester ? (
+            <div className="hero-recipient hero-recipient-in">
+              <div className="hero-avatar">
+                <img src={requester.imageUrl} alt={requester.name} />
+              </div>
+              <span className="hero-recipient-name">{requester.name} さんへの支払い</span>
             </div>
-            <span className="hero-recipient-name">
-              {requester ? `${requester.name} さんへの支払い` : "請求元を確認中..."}
-            </span>
-          </div>
+          ) : (
+            // 請求元をまだ取得中：アバターと名前の形をしたグレーのブロックを光らせる
+            <div className="hero-recipient">
+              <div className="hero-avatar skeleton" />
+              <span className="skeleton skeleton-text" />
+            </div>
+          )}
 
           <div className="hero-amount">
             {/* 請求金額は変更できないので入力欄ではなく表示のみ */}
@@ -165,8 +179,8 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         >
           {isSubmitting ? <span className="button-spinner" /> : "支払う"}
         </button>
-
-        {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
+      </div>
+      {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
       </div>
     </div>
   );

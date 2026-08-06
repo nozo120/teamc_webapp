@@ -70,9 +70,11 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   if (!state || !state.recipient) {
     return (
       <div className="container">
-        <div className="phone-frame full-page">
-          <p>送金先が選択されていません</p>
-          <button onClick={() => navigate("/")}>送金先を選び直す</button>
+        <div className="phone-frame">
+          <div className="phone-scroll full-page">
+            <p>送金先が選択されていません</p>
+            <button onClick={() => navigate("/")}>送金先を選び直す</button>
+          </div>
         </div>
       </div>
     );
@@ -225,7 +227,8 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
 
   return (
     <div className="container">
-    <div className="phone-frame full-page">
+    <div className="phone-frame">
+    <div className="phone-scroll full-page">
       {/* 戻るボタン：1つ前の画面（顧客リスト）に戻る */}
       <button className="back-button" onClick={() => navigate(-1)}>
         ← 戻る
@@ -328,8 +331,9 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       >
         {isSubmitting ? <span className="button-spinner" /> : "送金"}
       </button>
-
-      {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
+    </div>
+    {/* phone-scrollの外＝phone-frame直下に置くことで、中がスクロールされていても位置がずれない */}
+    {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
     </div>
     </div>
   );
