@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { PATHS } from '../../routes/paths';
 import { getUser } from '../../utils/userApi';
 import { getMyUserId } from '../../utils/myUserId';
+import { getTransactionHistory, TransactionHistory } from '../../utils/historyApi';
 import { user } from '../../user';
 import './ss.css';
 
@@ -12,29 +13,37 @@ export default function UserInfo() {
   const [currentUser, setCurrentUser] = useState<user | null>(null);
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
-  const [historyList] = useState([
-    { id: 1, name: '山田 太郎', amount: 3000, date: '8月5日' },
-    { id: 2, name: '鈴木 花子', amount: 5500, date: '8月3日' },
-    { id: 3, name: '佐藤 一郎', amount: 10000, date: '7月28日' },
-  ]);
+  // 取引履歴用のステート
+  const [historyList, setHistoryList] = useState<TransactionHistory[]>([]);
 
   useEffect(() => {
     const myId = getMyUserId();
+
+    // ユーザー情報の取得
     getUser(myId)
       .then((data: user) => {
         setCurrentUser(data);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         console.error("ユーザー情報の取得に失敗しました", err);
+      });
+
+    // 入出金履歴の取得（型を明示）
+    getTransactionHistory(myId)
+      .then((data: TransactionHistory[]) => {
+        setHistoryList(data);
+      })
+      .catch((err: Error) => {
+        console.error("入出金履歴の取得に失敗しました", err);
       });
   }, []);
 
   const handleTransferClick = () => {
-    navigate(PATHS.USER_LIST); // 送金相手選択画面へ遷移
+    navigate(PATHS.USER_LIST);
   };
 
   const handleRequestClick = () => {
-    navigate(PATHS.INVOICE_USER_LIST); // 請求先選択画面へ遷移
+    navigate(PATHS.INVOICE_USER_LIST);
   };
 
   return (
@@ -53,8 +62,9 @@ export default function UserInfo() {
         {/* ユーザプロフィールエリア */}
         <div className="user-header">
           <div className="avatar">
-            <img 
-              src={currentUser ? currentUser.userIconURL : "https://via.placeholder.com/60"} 
+            {/* アイコンはDB上 null がありうるので、未設定のときも代替画像にする */}
+            <img
+              src={currentUser?.userIconURL ?? "https://via.placeholder.com/60"}
               alt="ユーザアイコン" 
               className="avatar-img" 
             />
@@ -124,19 +134,24 @@ export default function UserInfo() {
             <span className="history-all">一覧を見る</span>
           </div>
           <div className="history-list">
-            {historyList.map((item) => (
-              <div key={item.id} className="history-item">
-                <div className="history-left">
-                  <div className="history-icon-dot"></div>
-                  <div className="history-info">
-                    <span className="history-name">{item.name}</span>
-                    <span className="history-date">{item.date}</span>
+            {historyList.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#888', fontSize: '14px', marginTop: '20px' }}>
+                明細はありません
+              </p>
+            ) : (
+              historyList.map((item) => (
+                <div key={item.id} className="history-item">
+                  <div className="history-left">
+                    <div className="history-icon-dot"></div>
+                    <div className="history-info">
+                      <span className="history-name">{item.name}</span>
+                      <span className="history-date">{item.date}</span>
+                    </div>
                   </div>
+                  <span className="history-amount">-{item.amount.toLocaleString()}円</span>
                 </div>
-                {/* 金額を右側に配置し、見やすいクリアな色に調整 */}
-                <span className="history-amount">-{item.amount.toLocaleString()}円</span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
