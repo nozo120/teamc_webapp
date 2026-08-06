@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { TransferCompleteState } from "./types";
 import { getIconUrl } from "./types";
+import { useCountUp } from "./useCountUp";
 import { PATHS } from "../../routes/paths";
 import "./TransferScreen.css";
 import "./TransferComplete.css";
@@ -23,6 +24,10 @@ const TransferComplete: React.FC = () => {
   // 完了日時。この画面を開いた時刻で固定する（再描画のたびに変わらないよう関数で初期化）
   const [completedAt] = useState(() => new Date());
 
+  // 金額を0から数え上げる演出。
+  // hooksはガード（早期return）より前で呼ぶ必要があるため、ここで state から直接読む
+  const animatedAmount = useCountUp(state?.amount ?? 0);
+
   // ガード：直接URLを打たれた/リロードされた場合はstateが空になる
   if (!state || !state.recipient) {
     return (
@@ -37,7 +42,8 @@ const TransferComplete: React.FC = () => {
     );
   }
 
-  const { recipient: user, amount, message, kind } = state;
+  // amount は上の useCountUp で animatedAmount として扱うため、ここでは取り出さない
+  const { recipient: user, message, kind } = state;
 
   // 請求リンクからの支払いか、通常の送金かで文言だけ変える
   const isPayment = kind === "payment";
@@ -61,7 +67,7 @@ const TransferComplete: React.FC = () => {
         <div className="complete-amount-box">
           <p className="complete-amount-label">{amountLabel}</p>
           <p className="complete-amount">
-            {amount.toLocaleString()}
+            {animatedAmount.toLocaleString()}
             <span className="complete-yen">円</span>
           </p>
         </div>
