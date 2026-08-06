@@ -1,19 +1,29 @@
 /* InputTextCard.css */
+/* 見た目は InputNumCard.css / LoginPage.css の入力欄と揃えている */
 
-/* 通常時の入力欄スタイル */
 .input-text {
     /* スマホ枠の幅いっぱいに広げる。padding を width に含めるため box-sizing も指定 */
     width: 100%;
     box-sizing: border-box;
-    padding: 8px 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    height: 52px;
+    padding: 0 14px;
+    /* iOSで自動拡大されないよう16px以上にする */
+    font-size: 17px;
+    color: #1a2b3c;
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.input-text::placeholder {
+    color: #cbd5e1;
 }
 
 /* フォーカス時の見栄え */
 .input-text:focus {
-    border-color: #3b82f6;
+    background-color: #ffffff;
+    border-color: #ff4e78;
+    box-shadow: 0 0 0 4px rgba(255, 78, 120, 0.12);
 }

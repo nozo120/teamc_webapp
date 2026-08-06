@@ -103,10 +103,25 @@ export function InvoicelinkCreationPage() {
                     {isSubmitting ? '作成中...' : '請求リンクを作成'}
                 </button>
 
-                {/* 受け取れているか確認するための仮表示 */}
-                <p className='invoice-preview'>請求先ID: {recipientId}</p>
-                <p className='invoice-preview'>入力中の金額: {amount}円</p>
-                <p className='invoice-preview'>入力中のメッセージ: {message}</p>
+                {/* 入力内容の確認 */}
+                <div className='invoice-summary'>
+                    <div className='invoice-summary-row'>
+                        <span className='invoice-summary-label'>請求先ID</span>
+                        <span className='invoice-summary-value'>{recipientId}</span>
+                    </div>
+                    <div className='invoice-summary-row'>
+                        <span className='invoice-summary-label'>金額</span>
+                        <span className='invoice-summary-value is-amount'>
+                            {amount.toLocaleString()} 円
+                        </span>
+                    </div>
+                    <div className='invoice-summary-row'>
+                        <span className='invoice-summary-label'>メッセージ</span>
+                        <span className={message ? 'invoice-summary-value' : 'invoice-summary-value is-empty'}>
+                            {message || '未入力'}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     );

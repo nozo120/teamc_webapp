@@ -46,41 +46,66 @@ export function LoginPage() {
         }
     };
 
+    const canSubmit = inputId !== '' && !isChecking;
+
     return (
         // スマホ枠を画面中央に置くための外側
         <div className='phone-container'>
-            <div className='phone'>
-                <h2 className='phone-title'>ログイン</h2>
+            <div className='phone login-phone'>
 
-                <p className='login-description'>
-                    利用者のIDを入力してください
-                </p>
+                {/* ブランド表示。ss.tsx のトップバーと色味を揃えている */}
+                <div className='login-brand'>
+                    <div className='login-logo'>口座</div>
+                    <p className='login-app-title'>スマート決済アプリ</p>
+                </div>
 
-                <label className='login-label' htmlFor='login-user-id'>ユーザーID</label>
-                <input
-                    id='login-user-id'
-                    className='login-input'
-                    type='number'
-                    // スマホで数字キーボードが出るようにする
-                    inputMode='numeric'
-                    min={1}
-                    placeholder='例) 1'
-                    value={inputId}
-                    onChange={(e) => setInputId(e.target.value)}
-                    // 入力欄でEnterを押しても送信できるようにする
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
-                />
+                <div className='login-form'>
+                    <h2 className='login-heading'>ログイン</h2>
+                    <p className='login-description'>利用者のIDを入力してください</p>
 
-                {/* 失敗したときだけ表示する */}
-                {loginError && <p className='login-error'>{loginError}</p>}
+                    <label className='login-label' htmlFor='login-user-id'>
+                        ユーザーID
+                    </label>
 
-                <button
-                    className='login-button'
-                    onClick={handleLogin}
-                    disabled={inputId === '' || isChecking}
-                >
-                    {isChecking ? '確認中...' : 'ログイン'}
-                </button>
+                    {/* 入力欄。エラー時は枠を赤くして、どこが問題か分かるようにする */}
+                    <div className={loginError ? 'login-field has-error' : 'login-field'}>
+                        <span className='login-field-icon'>#</span>
+                        <input
+                            id='login-user-id'
+                            className='login-input'
+                            type='number'
+                            // スマホで数字キーボードが出るようにする
+                            inputMode='numeric'
+                            min={1}
+                            placeholder='例) 1'
+                            value={inputId}
+                            onChange={(e) => {
+                                setInputId(e.target.value);
+                                // 打ち直し始めた時点で前回のエラーは消す
+                                if (loginError) setLoginError(null);
+                            }}
+                            // 入力欄でEnterを押しても送信できるようにする
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }}
+                        />
+                    </div>
+
+                    {/* 失敗したときだけ表示する。高さを常に確保して、出た瞬間に下がずれないようにする */}
+                    <p className='login-error' role='alert'>
+                        {loginError ?? ' '}
+                    </p>
+
+                    <button
+                        className='login-button'
+                        onClick={handleLogin}
+                        disabled={!canSubmit}
+                    >
+                        {isChecking
+                            ? <span className='login-spinner' aria-label='確認中' />
+                            : 'ログイン'}
+                    </button>
+                </div>
+
+                <p className='login-note'>パスワードの入力は不要です</p>
             </div>
         </div>
     );
