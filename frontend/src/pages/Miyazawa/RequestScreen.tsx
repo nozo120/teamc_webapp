@@ -1,9 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { PATHS } from '../../routes/paths';
+import { CreateRequestResult } from '../../utils/requestApi';
 // @ts-ignore
 import './request.css';
 
 export default function RequestScreen() {
-  const [generatedLink, setGeneratedLink] = useState("https://example.com/pay?id=123456");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // 前の画面（InvoicelinkCreationPage）から state で渡されたデータを受け取る
+  const createdData = location.state as CreateRequestResult | null;
+
+  // リンクがない場合（URLの直打ちなど）のフォールバック
+  const generatedLink = createdData?.requestLink ?? "リンクが見つかりません";
+  
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -13,20 +24,9 @@ export default function RequestScreen() {
   };
 
   const handleBackToTop = () => {
-    alert("トップ画面に戻るボタンが押されました");
+    // ホーム画面（ssの画面 / PATHS.HOME）へ遷移する
+    navigate(PATHS.HOME);
   };
-
-  useEffect(() => {
-    // 起動したバックエンドのURLを指定
-    fetch('http://localhost:3001/api/requests') // ※APIのパスは実際のルーティングに合わせて調整してください
-      .then((res) => res.json())
-      .then((data) => {
-        setGeneratedLink(data.link);
-      })
-      .catch((err) => {
-        console.error("通信エラー:", err);
-      });
-  }, []);
 
   return (
     <div className="request-container">
