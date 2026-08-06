@@ -62,8 +62,9 @@ export default function UserInfo() {
         {/* ユーザプロフィールエリア */}
         <div className="user-header">
           <div className="avatar">
-            <img 
-              src={currentUser ? currentUser.userIconURL : "https://via.placeholder.com/60"} 
+            {/* アイコンはDB上 null がありうるので、未設定のときも代替画像にする */}
+            <img
+              src={currentUser?.userIconURL ?? "https://via.placeholder.com/60"}
               alt="ユーザアイコン" 
               className="avatar-img" 
             />

@@ -4,7 +4,7 @@ import { dealing } from "../services/remitService.js";
 export const handleRemit = async (req: Request, res: Response) => {
   try {
 
-    const { senderId, receiverId, amount} = req.body;
+    const { senderId, receiverId, amount, message } = req.body;
 
     if (senderId === undefined || receiverId === undefined || amount === undefined) {
       return res.status(400).json({
@@ -17,6 +17,7 @@ export const handleRemit = async (req: Request, res: Response) => {
       Number(senderId),
       Number(receiverId),
       Number(amount),
+      message ?? ""
     );
 
     return res.status(200).json({
