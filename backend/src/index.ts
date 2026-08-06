@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import remitRoutes from './routes/remitRoutes.js';
 
 import requestRoute from "./routes/requestRoutes.js";
 import userRoute from "./routes/userRoutes.js";
@@ -24,6 +25,8 @@ app.get('/history', TransactionController.getTransactions);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Team C バックエンドサーバー起動中！' });
 });
+
+app.use('/api/remit', remitRoutes);
 
 
 

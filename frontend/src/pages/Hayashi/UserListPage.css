@@ -1,4 +1,38 @@
-/* スマホ枠（.phone-container / .phone / .phone-title）は src/styles/phone.css に移動 */
+/* スマホ枠（.phone-container / .phone / .phone-title）は src/styles/phone.css に置いている。
+   色・角丸は LoginPage.css と揃えている */
+
+/* 名前で絞り込む検索欄。タイトルと一覧の間に置く */
+.user-search {
+    width: 100%;
+    box-sizing: border-box;
+    height: 44px;
+    padding: 0 14px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    color: #1a2b3c;
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+    /* 一覧がスクロールしても検索欄は縮まないようにする */
+    flex-shrink: 0;
+}
+
+.user-search:focus {
+    background-color: #ffffff;
+    border-color: #ff4e78;
+    box-shadow: 0 0 0 4px rgba(255, 78, 120, 0.12);
+}
+
+.user-search::placeholder {
+    color: #cbd5e1;
+}
+
+/* type="search" に付く×ボタンの見た目を揃える */
+.user-search::-webkit-search-cancel-button {
+    cursor: pointer;
+}
 
 /* 一覧は枠内でスクロールさせる */
 .user-list {
@@ -7,40 +41,80 @@
     padding: 0;
     flex: 1;
     overflow-y: auto;
+    /* 行同士を離してカードらしく見せる */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
+/* 1行をカードとして扱う。区切り線ではなく余白と枠で分ける */
 .user-list-item {
-    border-bottom: 1px solid #eee;
+    border-radius: 14px;
+    background-color: #ffffff;
+    border: 1.5px solid #f1f5f9;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    /* 一覧が短いとき、行が縦に伸びてしまうのを防ぐ */
+    flex-shrink: 0;
+}
+
+.user-list-item:hover {
+    border-color: #ffd1dc;
+    box-shadow: 0 4px 12px rgba(230, 0, 57, 0.08);
+}
+
+.user-list-item:active {
+    transform: translateY(1px);
+}
+
+/* 検索で0件になったとき、一覧が空のままだと壊れて見えるので文言を出す */
+.user-list-empty {
+    padding: 40px 8px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
 }
 
 .user-button {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 8px;
+    padding: 10px 12px;
     width: 100%;
     box-sizing: border-box;
     background: transparent;
     border: none;
+    border-radius: 14px;
     cursor: pointer;
     text-align: left;
 }
 
-.user-button:hover {
-    background-color: #f3f4f6;
+/* 行の右端に山括弧を出して、押せることを示す */
+.user-button::after {
+    content: '›';
+    margin-left: auto;
+    color: #cbd5e1;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.user-list-item:hover .user-button::after {
+    color: #ff4e78;
 }
 
 .user-icon {
-    width: 50px;
-    height: 50px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     object-fit: cover;
+    background-color: #f1f5f9;
+    /* アイコンにも赤系の細い縁を入れて ss.css の .avatar と揃える */
+    border: 1.5px solid #ffe4e9;
     /* 縮まないようにする */
     flex-shrink: 0;
 }
 
 .user-name {
     font-weight: bold;
-    font-size: 16px;
-    color: #1f2937;
+    font-size: 15px;
+    color: #1a2b3c;
 }

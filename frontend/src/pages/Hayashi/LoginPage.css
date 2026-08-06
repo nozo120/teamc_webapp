@@ -1,0 +1,210 @@
+/* スマホ枠（.phone-container / .phone）は src/styles/phone.css に置いている。
+   この画面は入力欄が少ないので、上下に余白を配って中央にまとめる */
+
+.login-phone {
+    justify-content: space-between;
+    /* 上下のブランド／注記と、中央のフォームを離す */
+    padding: 40px 24px 28px;
+}
+
+/* ── ブランド ───────────────────────────── */
+
+.login-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ss.css の .yucho-logo-mark と同じ赤系。ログイン画面では主役なので大きく丸く */
+.login-logo {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff4e78 0%, #e60039 100%);
+    box-shadow: 0 6px 16px rgba(230, 0, 57, 0.25);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.login-app-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #e11d48;
+    letter-spacing: 0.5px;
+}
+
+/* ── フォーム ───────────────────────────── */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-heading {
+    margin: 0 0 6px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #1a2b3c;
+}
+
+.login-description {
+    margin: 0 0 24px;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.login-label {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #374151;
+    letter-spacing: 0.5px;
+}
+
+/* 入力欄はアイコンと input をまとめた箱として枠を描く。
+   input 自体の枠は消し、この箱側で focus/error を表現する */
+.login-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    height: 52px;
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.login-field:focus-within {
+    background-color: #ffffff;
+    border-color: #ff4e78;
+    box-shadow: 0 0 0 4px rgba(255, 78, 120, 0.12);
+}
+
+.login-field.has-error {
+    border-color: #e60039;
+    background-color: #fff5f7;
+}
+
+.login-field-icon {
+    color: #cbd5e1;
+    font-size: 16px;
+    font-weight: bold;
+    /* 縮まないようにする */
+    flex-shrink: 0;
+}
+
+.login-field:focus-within .login-field-icon {
+    color: #ff4e78;
+}
+
+.login-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 17px;
+    color: #1a2b3c;
+    /* iOSで拡大されないよう16px以上にしている */
+}
+
+.login-input::placeholder {
+    color: #cbd5e1;
+}
+
+/* type="number" の上下ボタンは不要なので消す */
+.login-input::-webkit-outer-spin-button,
+.login-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.login-input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* エラー文。出ていないときも高さを確保して、表示された瞬間にボタンが動かないようにする */
+.login-error {
+    min-height: 18px;
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #e60039;
+    white-space: pre-wrap;
+}
+
+/* ── ボタン ───────────────────────────── */
+
+/* request.css の .request-btn-green と同じグラデーションで統一する */
+.login-button {
+    height: 52px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff4e78 0%, #e60039 100%);
+    box-shadow: 0 4px 12px rgba(230, 0, 57, 0.25);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.login-button:hover:not(:disabled) {
+    opacity: 0.92;
+}
+
+/* 押した瞬間に少し沈ませて、反応したことを分かるようにする */
+.login-button:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(230, 0, 57, 0.25);
+}
+
+.login-button:disabled {
+    background: #e2e8f0;
+    box-shadow: none;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* 確認中に回す輪。文字と入れ替えるのでボタンの高さは変わらない */
+.login-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: login-spin 0.7s linear infinite;
+}
+
+@keyframes login-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 目が回るのが苦手な人向けに、OS設定を尊重して回転を止める */
+@media (prefers-reduced-motion: reduce) {
+    .login-spinner {
+        animation: none;
+    }
+}
+
+/* ── 注記 ───────────────────────────── */
+
+.login-note {
+    margin: 0;
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+}

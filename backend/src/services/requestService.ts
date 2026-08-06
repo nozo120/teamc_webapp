@@ -1,10 +1,11 @@
-export const createRequestLink = (
+import { prisma } from "../utils/prisma.js";
+
+export const createRequestLink = async (
   amount: number,
   message: string | undefined,
   requesterId: number,
-  payerId: number | null = null
+  payerId: number
 ) => {
-
   const requestId = crypto.randomUUID();
 
   const createdAt = new Date();
@@ -18,11 +19,16 @@ export const createRequestLink = (
     `${String(createdAt.getSeconds()).padStart(2, "0")}-` +
     `${String(createdAt.getMilliseconds()).padStart(3, "0")}`;
 
+  // ホスト名は付けずパスだけを返す。
+  // フロントのポートは人によって違うため、表示する側で window.location.origin を足す
   const requestLink =
-    `http://localhost:3001/payment/?time=${formattedTime}` +
+    `/payment/?time=${formattedTime}` +
     `&kozaBango=${requesterId}` +
+    `&payerId=${payerId}` +
     `&kingaku=${amount}` +
     `&message=${encodeURIComponent(message ?? "")}`;
+
+  
 
   return {
     id: requestId,
@@ -32,6 +38,6 @@ export const createRequestLink = (
     message: message ?? null,
     status: "pending",
     createdAt,
-    requestLink
+    requestLink,
   };
 };

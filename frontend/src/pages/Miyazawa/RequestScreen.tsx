@@ -12,8 +12,11 @@ export default function RequestScreen() {
   // 前の画面（InvoicelinkCreationPage）から state で渡されたデータを受け取る
   const createdData = location.state as CreateRequestResult | null;
 
-  // リンクがない場合（URLの直打ちなど）のフォールバック
-  const generatedLink = createdData?.requestLink ?? "リンクが見つかりません";
+  // バックエンドはパスだけ（/payment/?...）を返すので、今開いているホストを足して完全なURLにする
+  // こうするとフロントのポート番号が何番でも、そのまま踏めるリンクになる
+  const generatedLink = createdData?.requestLink
+    ? `${window.location.origin}${createdData.requestLink}`
+    : "リンクが見つかりません";
   
   const [copied, setCopied] = useState(false);
 

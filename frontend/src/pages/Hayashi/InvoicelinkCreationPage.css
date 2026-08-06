@@ -1,39 +1,109 @@
 /* InvoicelinkCreationPage.css */
-/* スマホ枠そのものの見た目は src/styles/phone.css を参照 */
+/* スマホ枠そのものの見た目は src/styles/phone.css を参照。
+   色・角丸は LoginPage.css と揃えている */
 
 .invoice-label {
-    font-size: 14px;
-    color: #555;
-    margin: 16px 0 8px;
+    display: block;
+    margin: 20px 0 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #374151;
+    letter-spacing: 0.5px;
 }
 
+/* 入力内容の確認カード。入力欄と地続きに見えないよう、背景を薄く敷いて枠で囲う */
+.invoice-summary {
+    margin-top: 24px;
+    padding: 14px 16px;
+    background-color: #f8fafc;
+    border: 1.5px solid #f1f5f9;
+    border-radius: 12px;
+}
+
+.invoice-summary-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+}
+
+.invoice-summary-row + .invoice-summary-row {
+    border-top: 1px solid #eef2f6;
+}
+
+.invoice-summary-label {
+    font-size: 12px;
+    color: #94a3b8;
+    /* ラベルは縮ませず、長い値の側を折り返す */
+    flex-shrink: 0;
+}
+
+.invoice-summary-value {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1a2b3c;
+    text-align: right;
+    /* 長いメッセージでカードからはみ出さないようにする */
+    word-break: break-word;
+}
+
+/* 金額は主役なので少し大きく、色も強くする */
+.invoice-summary-value.is-amount {
+    font-size: 18px;
+    color: #e60039;
+}
+
+/* 未入力のとき（メッセージ空など）は淡く出す */
+.invoice-summary-value.is-empty {
+    font-weight: normal;
+    color: #cbd5e1;
+}
+
+/* request.css の .request-btn-green と同じグラデーションで統一する */
 .invoice-submit-button {
     width: 100%;
     box-sizing: border-box;
+    height: 52px;
     margin-top: 24px;
-    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 16px;
+    font-weight: bold;
     color: #ffffff;
-    background-color: #3b82f6;
+    background: linear-gradient(135deg, #ff4e78 0%, #e60039 100%);
+    box-shadow: 0 4px 12px rgba(230, 0, 57, 0.25);
     border: none;
-    border-radius: 6px;
+    border-radius: 12px;
     cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.invoice-submit-button:hover:not(:disabled) {
+    opacity: 0.92;
+}
+
+/* 押した瞬間に少し沈ませて、反応したことを分かるようにする */
+.invoice-submit-button:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(230, 0, 57, 0.25);
 }
 
 /* 金額未入力・送信中は押せないことを見た目でも示す */
 .invoice-submit-button:disabled {
-    background-color: #cbd5e1;
+    background: #e2e8f0;
+    box-shadow: none;
+    color: #94a3b8;
     cursor: not-allowed;
 }
 
 .invoice-error {
-    color: #ef4444;
+    margin: 12px 0 0;
+    padding: 10px 12px;
     font-size: 12px;
-    margin: 8px 0 0;
-}
-
-.invoice-preview {
-    margin: 4px 0 0;
-    font-size: 14px;
-    color: #555;
+    color: #e60039;
+    background-color: #fff5f7;
+    border: 1px solid #ffd1dc;
+    border-radius: 10px;
 }
