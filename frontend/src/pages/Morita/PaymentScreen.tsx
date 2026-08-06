@@ -18,6 +18,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import type { User } from "./types";
 import { remit, fetchUserByAccountNumber } from "./api/remitApi";
 import { PATHS } from "../../routes/paths";
+import { setMyUserId } from "../../utils/myUserId";
 import Toast from "./Toast";
 import "./TransferScreen.css";
 
@@ -77,6 +78,15 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       )
       .catch((err) => setLoadError(err.message));
   }, [accountNumber]);
+
+  // 請求リンクは「payerId 宛て」に発行されたものなので、
+  // そのリンクを開いた時点で、支払う人としてログインし直す。
+  // これをしないと支払い後にホームへ戻ったとき、別人の画面が表示されてしまう
+  useEffect(() => {
+    if (payerIdParam) {
+      setMyUserId(payerId);
+    }
+  }, [payerIdParam, payerId]);
 
   useEffect(() => {
     // 支払う人が自分自身ならpropsの残高をそのまま使う
