@@ -1,6 +1,6 @@
 import {PrismaClient} from "../../generated/prisma/client.js";
 const prisma = new PrismaClient();
-async function dealing(senderId: number, receiverId: number, amount: number)
+export async function dealing(senderId: number, receiverId: number, amount: number)
 {if (amount <= 0) {return "送金金額が不適切です!"};
     const sender = await prisma.user.findUnique({where: {id: senderId}});
 const receiver = await prisma.user.findUnique({where: {id: receiverId}});
