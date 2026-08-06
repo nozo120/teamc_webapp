@@ -6,6 +6,7 @@
   background-color: #eef2f5;
 }
 .phone-frame {
+  position: relative;
   background-color: #fff;
   width: 360px;
   height: 640px;
@@ -87,6 +88,20 @@
 .recipient-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .recipient-name { font-size: 17px; }
 .error-text { color: #C1272D; font-size: 13px; margin: 6px 0 0; }
+.message-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin: 14px 0 6px;
+}
+.message-header .section-label { margin: 0; }
+.message-count { font-size: 11px; color: #9ca3af; }
+/* 送信中ボタンのスピナー */
+.button-spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 .calc-hint { font-size: 12px; color: #6b7280; margin: 6px 0 0; }
 /* 支払い画面：金額は変更できないので入力欄ではなく文字で出す */
 .hero-amount-fixed { font-size: 38px; font-weight: bold; }

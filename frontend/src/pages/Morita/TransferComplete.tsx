@@ -45,8 +45,11 @@ const TransferComplete: React.FC = () => {
   return (
     <div className="container">
       <div className="phone-frame complete-page">
-        <div className="complete-avatar">
-          <img src={getIconUrl(user)} alt={user.name} />
+        <div className="complete-avatar-wrap">
+          <div className="complete-avatar">
+            <img src={getIconUrl(user)} alt={user.name} />
+          </div>
+          <div className="complete-check">✓</div>
         </div>
         <p className="complete-to">{user.name} さんに</p>
 
