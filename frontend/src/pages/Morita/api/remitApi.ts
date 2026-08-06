@@ -6,25 +6,18 @@
 // 「残高を読む → 計算する → 書き戻す」を手動で行っている。
 // backend が完成したら、この関数の中身を fetch("/api/remit") 1本に差し替える。
 
-const API_BASE = "http://localhost:3010";
+const API_BASE = "http://localhost:3001";
 
 type RemitParams = {
   senderId: number;
   receiverId: number;
   amount: number;
-  message: string;
+  message?: string;
 };
 
-// json-server の users から1件取得する
-const fetchUser = async (id: number) => {
-  const res = await fetch(`${API_BASE}/users/${id}`);
-  if (!res.ok) throw new Error("ユーザー情報の取得に失敗しました");
-  return res.json();
-};
-
-// 口座番号からユーザーを1件探す（請求リンクには口座番号しか入っていないため）
+// 口座番号からユーザーを1件探す（必要に応じてバックエンドのユーザー検索APIに繋ぎ替え）
 export const fetchUserByAccountNumber = async (accountNumber: string) => {
-  const res = await fetch(`${API_BASE}/users?accountNumber=${accountNumber}`);
+  const res = await fetch(`${API_BASE}/api/users?accountNumber=${accountNumber}`);
   if (!res.ok) throw new Error("請求元の情報が取得できませんでした");
   const users = await res.json();
   if (!Array.isArray(users) || users.length === 0) {
@@ -33,49 +26,31 @@ export const fetchUserByAccountNumber = async (accountNumber: string) => {
   return users[0];
 };
 
-// 残高だけを書き換える（PATCHは指定した項目だけ更新する）
-const updateBalance = async (id: number, balance: number) => {
-  const res = await fetch(`${API_BASE}/users/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ balance }),
-  });
-  if (!res.ok) throw new Error("残高の更新に失敗しました");
-};
-
+// 送金処理（バックエンドの Express / Prisma トランザクションを呼び出す）
 export const remit = async ({ senderId, receiverId, amount, message }: RemitParams) => {
-  // 1. 送金元・送金先の「今の」残高を取り直す
-  //    画面表示時の値は古くなっている可能性があるため
-  const [sender, receiver] = await Promise.all([
-    fetchUser(senderId),
-    fetchUser(receiverId),
-  ]);
+  console.log("送金データ", {
+    senderId,
+    receiverId,
+    amount,
+  });
+  const res = await fetch(`${API_BASE}/api/remit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      senderId: Number(senderId),
+      receiverId: Number(receiverId),
+      amount: Number(amount),
+      message,
+    }),
+  });
 
-  // 2. 残高が足りているか最終確認（画面のチェックをすり抜けた場合の保険）
-  if (sender.balance < amount) {
-    throw new Error("残高が不足しています");
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "送金処理に失敗しました");
   }
 
-  // 3. 双方の残高を更新する
-  await updateBalance(senderId, sender.balance - amount);
-  await updateBalance(receiverId, receiver.balance + amount);
-
-  // 4. 送金履歴を記録する
-  //    db.json に "transactions": [] が無いと404になるので、
-  //    履歴だけは失敗しても送金自体は成立とみなす
-  try {
-    await fetch(`${API_BASE}/transactions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        senderId,
-        receiverId,
-        amount,
-        message,
-        createdAt: new Date().toISOString(),
-      }),
-    });
-  } catch {
-    console.warn("送金履歴の記録に失敗しました（db.jsonにtransactionsがない可能性）");
-  }
+  return data;
 };
