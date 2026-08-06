@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
+import requestRoute from "./routes/requestRoutes.js";
+
+import { handleRemit } from './controllers/remitController.js';
+
 dotenv.config();
 
 const app = express();
@@ -17,6 +21,19 @@ app.get('/api/health', (req, res) => {
 });
 
 
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// ② 送金APIのエンドポイントを追加
+app.post('/api/remit', handleRemit);
+
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
+
+
+app.use("/request", requestRoute);

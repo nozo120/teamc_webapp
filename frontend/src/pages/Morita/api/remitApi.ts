@@ -22,6 +22,22 @@ const fetchUser = async (id: number) => {
   return res.json();
 };
 
+// 請求リンクの kozaBango からユーザーを1件探す。
+// リンク生成側が「口座番号(1234567)」を入れる場合と「ユーザーID(1)」を入れる場合の
+// どちらもありえるので、口座番号で探して見つからなければIDとして扱う。
+export const fetchUserByAccountNumber = async (accountNumber: string) => {
+  const res = await fetch(`${API_BASE}/users?accountNumber=${accountNumber}`);
+  if (res.ok) {
+    const users = await res.json();
+    if (Array.isArray(users) && users.length > 0) return users[0];
+  }
+
+  // 口座番号として見つからなかったので、ユーザーIDとして取り直す
+  const byId = await fetch(`${API_BASE}/users/${accountNumber}`);
+  if (!byId.ok) throw new Error("請求元のユーザーが見つかりませんでした");
+  return byId.json();
+};
+
 // 残高だけを書き換える（PATCHは指定した項目だけ更新する）
 const updateBalance = async (id: number, balance: number) => {
   const res = await fetch(`${API_BASE}/users/${id}`, {
