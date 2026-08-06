@@ -1,10 +1,11 @@
-export const createRequestLink = (
+import { prisma } from "../utils/prisma.js";
+
+export const createRequestLink = async (
   amount: number,
   message: string | undefined,
   requesterId: number,
-  payerId: number | null = null
+  payerId: number
 ) => {
-
   const requestId = crypto.randomUUID();
 
   const createdAt = new Date();
@@ -21,17 +22,20 @@ export const createRequestLink = (
   const requestLink =
     `http://localhost:3001/payment/?time=${formattedTime}` +
     `&kozaBango=${requesterId}` +
+    `&payerId=${payerId}` +
     `&kingaku=${amount}` +
     `&message=${encodeURIComponent(message ?? "")}`;
 
+  
+
   return {
-    id: requestId,
+    id: request.id,
     requesterId,
     payerId,
     amount,
     message: message ?? null,
     status: "pending",
     createdAt,
-    requestLink
+    requestLink,
   };
 };
