@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { TransferCompleteState } from "./types";
+import { getIconUrl } from "./types";
 import { PATHS } from "../../routes/paths";
 import "./TransferScreen.css";
 import "./TransferComplete.css";
@@ -44,8 +45,11 @@ const TransferComplete: React.FC = () => {
   return (
     <div className="container">
       <div className="phone-frame complete-page">
-        <div className="complete-avatar">
-          <img src={user.imageUrl} alt={user.name} />
+        <div className="complete-avatar-wrap">
+          <div className="complete-avatar">
+            <img src={getIconUrl(user)} alt={user.name} />
+          </div>
+          <div className="complete-check">✓</div>
         </div>
         <p className="complete-to">{user.name} さんに</p>
 

@@ -1,34 +1,4 @@
-/* 画面全体（スマホ枠を中央に置くための背景） */
-.phone-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #eef2f5;
-}
-
-/* . を忘れずに付ける */
-.phone {
-    width: 360px;
-    height: 640px;
-    padding: 24px 16px;
-    background-color: #ffffff;
-    border: 8px solid #222;
-    border-radius: 36px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    /* padding と border を width に含める（これが無いと枠が太る） */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.phone-title {
-    font-size: 18px;
-    margin: 0 0 16px;
-    text-align: left;
-    color: #1f2937;
-}
+/* スマホ枠（.phone-container / .phone / .phone-title）は src/styles/phone.css に移動 */
 
 /* 一覧は枠内でスクロールさせる */
 .user-list {

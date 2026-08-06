@@ -2,9 +2,14 @@
 import { useRef, useState } from "react";//入力中のあたいをほじするもの
 import { useNavigate, useLocation } from "react-router-dom";//別の画面に遷移するための関数取得、前画面から受け取るやつ
 import type { TransferScreenState } from "./types";
+import { getIconUrl } from "./types";
 import { remit } from "./api/remitApi";
 import { PATHS } from "../../routes/paths";
+import Toast from "./Toast";
 import "./TransferScreen.css";
+
+// メッセージ欄に入力できる最大文字数
+const MESSAGE_MAX_LENGTH = 100;
 
 type Props = {
   maxAmount: number; // 送金上限額（自分の所持金）
@@ -16,6 +21,12 @@ type Operator = "+" | "-" | "×" | "÷";
 
 // 消費税率
 const TAX_RATE = 0.1;
+
+// よく使う金額（タップで加算する）
+const QUICK_AMOUNTS = [1000, 3000, 5000, 10000];
+
+// この金額を超えたら、桁の打ち間違いを疑って再入力を求める
+const HIGH_AMOUNT_THRESHOLD = 100000;
 
 // 金額は必ず0以上の整数にそろえる（小数は1円のズレになるので切り捨て）
 const toYen = (value: number) => Math.max(0, Math.floor(value));
@@ -81,6 +92,9 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   // 上限額を超えているか
   const isOverLimit = !isNaN(amount) && amount > maxAmount;
 
+  // 送金したあとに残る金額（使いすぎの判断材料として出す）
+  const balanceAfter = isNaN(amount) ? maxAmount : maxAmount - amount;
+
   // 送金ボタンを押せる条件
   // 計算の途中（例：5000 × と押しただけ）では送金させない
   const canSubmit = !isNaN(amount) && amount > 0 && !isOverLimit && pendingOp === null;
@@ -89,6 +103,12 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
     setAmountText(onlyNumbers);
+  };
+
+  // クイック金額ボタン：今の金額に足していく（連打で 1000 → 2000 → 3000）
+  const handleQuickAmount = (value: number) => {
+    const base = isNaN(amount) ? 0 : amount;
+    setAmountText(String(base + value));
   };
 
   // 演算子（＋−×÷）を押したとき
@@ -164,9 +184,23 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   const handleSubmit = async () => {
     if (!canSubmit) return;
 
-    // 送信前の最終確認
-    const confirmed = window.confirm(`${amount.toLocaleString()}円を送金します。よろしいですか？`);
+    // 送信前の最終確認（送金先の名前も出して、相手違いを防ぐ）
+    const confirmed = window.confirm(
+      `${recipient.name} さんに ${amount.toLocaleString()}円を送金します。よろしいですか？`
+    );
     if (!confirmed) return;
+
+    // 高額のときは桁の打ち間違いを疑って、金額をもう一度入力してもらう
+    if (amount >= HIGH_AMOUNT_THRESHOLD) {
+      const typed = window.prompt(
+        `高額の送金です。確認のため、送金金額をもう一度半角数字で入力してください。\n（例：${amount}）`
+      );
+      if (typed === null) return; // キャンセル
+      if (parseInt(typed.replace(/[^0-9]/g, ""), 10) !== amount) {
+        setSubmitError("入力された金額が一致しませんでした。送金を中止しました。");
+        return;
+      }
+    }
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -201,7 +235,7 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       <div className={isOverLimit ? "amount-hero over-limit" : "amount-hero"}>
         <div className="hero-recipient">
           <div className="hero-avatar">
-            <img src={recipient.imageUrl} alt={recipient.name} />
+            <img src={getIconUrl(recipient)} alt={recipient.name} />
           </div>
           <span className="hero-recipient-name">{recipient.name} さんに送る</span>
         </div>
@@ -232,10 +266,30 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         <p className="error-text">※上限金額を超えています</p>
       )}
 
-      {/* 送金上限額（＝所持金）は1行にまとめる */}
+      {/* 送金上限額（＝所持金）と、送金後にいくら残るか */}
       <div className="balance-row">
         <span>送金上限額</span>
         <span className="balance-value">{maxAmount.toLocaleString()}円</span>
+      </div>
+      <div className="balance-row">
+        <span>送金後の残高</span>
+        <span className={isOverLimit ? "balance-value short" : "balance-value"}>
+          {isOverLimit ? "残高不足" : `${balanceAfter.toLocaleString()}円`}
+        </span>
+      </div>
+
+      {/* よく使う金額（タップで加算） */}
+      <div className="quick-amounts" onMouseDown={keepFocus}>
+        {QUICK_AMOUNTS.map((value) => (
+          <button
+            key={value}
+            type="button"
+            className="quick-amount-button"
+            onClick={() => handleQuickAmount(value)}
+          >
+            +{value.toLocaleString()}
+          </button>
+        ))}
       </div>
 
       {/* 電卓：四則演算と税込計算 */}
@@ -253,16 +307,18 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       )}
 
       {/* メッセージ（任意） */}
-      <p className="section-label">メッセージ（任意）</p>
+      <div className="message-header">
+        <p className="section-label">メッセージ（任意）</p>
+        <span className="message-count">{message.length}/{MESSAGE_MAX_LENGTH}</span>
+      </div>
       <input
         type="text"
         placeholder="メッセージ"
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={(e) => setMessage(e.target.value.slice(0, MESSAGE_MAX_LENGTH))}
+        maxLength={MESSAGE_MAX_LENGTH}
         className="message-input"
       />
-
-      {submitError && <p className="error-text">{submitError}</p>}
 
       {/* 送金ボタン */}
       <button
@@ -270,8 +326,10 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         onClick={handleSubmit}
         disabled={!canSubmit || isSubmitting}
       >
-        {isSubmitting ? "送金中..." : "送金"}
+        {isSubmitting ? <span className="button-spinner" /> : "送金"}
       </button>
+
+      {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
     </div>
     </div>
   );

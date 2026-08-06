@@ -7,11 +7,18 @@
 //   kozaBango … 請求した人の口座番号
 //   kingaku   … 請求金額
 //   message   … 請求メッセージ（任意。未入力だと "undefined" が入ってくることがある）
+//
+// ※将来の変更予定
+//   金額をURLに直接載せる形は、リンクを書き換えれば請求額を改ざんできてしまう。
+//   バックエンドが請求データをDBに保存できるようになったら、
+//   /payment/{請求ID} の形にして、金額・請求者はIDを元にサーバーから取得する。
+//   その場合に直すのは、この下の「リンクから請求内容を取り出す」ブロックだけ。
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { User } from "./types";
 import { remit, fetchUserByAccountNumber } from "./api/remitApi";
 import { PATHS } from "../../routes/paths";
+import Toast from "./Toast";
 import "./TransferScreen.css";
 
 type Props = {
@@ -19,13 +26,14 @@ type Props = {
   senderId: number;  // 支払う人＝ログイン中の自分
 };
 
-// "2026-8-5-15-27-39-435" を「2026年8月5日 15:27:39」に整える
+// "2026-08-05-07-25-19-646" を「2026年8月5日 07:25:19」に整える
+// （ゼロ埋めあり・なしのどちらで来ても表示できるように数値へ直してから組み立てる）
 const formatLinkTime = (raw: string | null) => {
   if (!raw) return "";
   const [y, mo, d, h, mi, s] = raw.split("-");
   if (!y || !mo || !d) return raw;
-  const pad = (v?: string) => String(v ?? "0").padStart(2, "0");
-  return `${y}年${mo}月${d}日 ${pad(h)}:${pad(mi)}:${pad(s)}`;
+  const pad = (v?: string) => String(Number(v ?? 0)).padStart(2, "0");
+  return `${Number(y)}年${Number(mo)}月${Number(d)}日 ${pad(h)}:${pad(mi)}:${pad(s)}`;
 };
 
 const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
@@ -52,7 +60,14 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       return;
     }
     fetchUserByAccountNumber(accountNumber)
-      .then((user) => setRequester(user))
+      // DBは userIconURL、画面側は imageUrl という名前なのでここで揃える
+      .then((dbUser) =>
+        setRequester({
+          id: String(dbUser.id),
+          name: dbUser.name,
+          imageUrl: dbUser.userIconURL,
+        })
+      )
       .catch((err) => setLoadError(err.message));
   }, [accountNumber]);
 
@@ -143,15 +158,15 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
 
         {requestedAt && <p className="payment-time">請求日時 {requestedAt}</p>}
 
-        {submitError && <p className="error-text">{submitError}</p>}
-
         <button
           className={canSubmit ? "submit-button" : "submit-button disabled"}
           onClick={handlePay}
           disabled={!canSubmit}
         >
-          {isSubmitting ? "支払い中..." : "支払う"}
+          {isSubmitting ? <span className="button-spinner" /> : "支払う"}
         </button>
+
+        {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
       </div>
     </div>
   );
