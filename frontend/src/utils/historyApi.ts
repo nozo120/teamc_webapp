@@ -11,9 +11,16 @@ export type TransactionHistory = {
 /**
  * 指定したユーザーの入出金履歴を取得する
  */
-export async function getTransactionHistory(userId: number): Promise<TransactionHistory[]> {
-    const response = await fetch(`${API_BASE}/history?userId=${userId}`);
-    
+
+export async function getTransactionHistory(
+    userId: number
+): Promise<TransactionHistory[]> {
+
+    const response = await fetch(
+        `${API_BASE}/history?userId=${userId}`
+    );
+
+
     if (!response.ok) {
         throw new Error('入出金履歴の取得に失敗しました');
     }
