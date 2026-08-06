@@ -18,8 +18,10 @@ export const createRequestLink = (
     `${String(createdAt.getSeconds()).padStart(2, "0")}-` +
     `${String(createdAt.getMilliseconds()).padStart(3, "0")}`;
 
+  // 支払い画面は React のページなので、配信元はフロント(3000)。
+  // バックエンド(3001)には /payment ルートが無いため、3001 のままだと 404 になる
   const requestLink =
-    `http://localhost:3001/payment/?time=${formattedTime}` +
+    `http://localhost:3000/payment/?time=${formattedTime}` +
     `&kozaBango=${requesterId}` +
     `&kingaku=${amount}` +
     `&message=${encodeURIComponent(message ?? "")}`;
