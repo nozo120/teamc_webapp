@@ -1,0 +1,7 @@
+{
+  "history": [
+    { "id": 1, "userId": 1, "name": "山田 太郎", "amount": 3000, "date": "8月5日" },
+    { "id": 2, "userId": 1, "name": "鈴木 花子", "amount": 5500, "date": "8月3日" },
+    { "id": 3, "userId": 1, "name": "佐藤 一郎", "amount": 10000, "date": "7月28日" }
+  ]
+}
