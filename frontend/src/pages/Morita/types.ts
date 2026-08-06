@@ -27,7 +27,4 @@ export type TransferCompleteState = {
   message: string;
   // 完了画面の文言を出し分ける。省略時は送金あつかい
   kind?: "transfer" | "payment";
-  // 操作した本人（送金した人／支払った人）のID。
-  // ホームに戻るとき ?me= を引き継いで、同じ人の画面に戻すために使う
-  viewerId?: number;
 };
