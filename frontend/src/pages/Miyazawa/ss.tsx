@@ -12,15 +12,15 @@ export default function UserInfo() {
 
   const [currentUser, setCurrentUser] = useState<user | null>(null);
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
-
-  // 取引履歴用のステート
   const [historyList, setHistoryList] = useState<TransactionHistory[]>([]);
+  
+  // モーダルの開閉を管理するステート
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  const currentUserId = getMyUserId();
 
   useEffect(() => {
-    const myId = getMyUserId();
-
-    // ユーザー情報の取得
-    getUser(myId)
+    getUser(currentUserId)
       .then((data: user) => {
         setCurrentUser(data);
       })
@@ -28,15 +28,18 @@ export default function UserInfo() {
         console.error("ユーザー情報の取得に失敗しました", err);
       });
 
-    // 入出金履歴の取得（型を明示）
-    getTransactionHistory(myId)
+    getTransactionHistory(currentUserId)
       .then((data: TransactionHistory[]) => {
         setHistoryList(data);
       })
       .catch((err: Error) => {
         console.error("入出金履歴の取得に失敗しました", err);
       });
-  }, []);
+  }, [currentUserId]);
+
+  const handleSwitchUser = (userId: number) => {
+    window.location.search = `?me=${userId}`;
+  };
 
   const handleTransferClick = () => {
     navigate(PATHS.USER_LIST);
@@ -56,13 +59,54 @@ export default function UserInfo() {
             <span className="yucho-logo-mark">口座</span>
             <span className="yucho-app-title">スマート決済アプリ</span>
           </div>
-          <div className="yucho-help-icon">?</div>
+
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* 🌟 ログアウトボタン（クリックでログイン画面へ遷移） */}
+            <div 
+              className="yucho-help-icon" 
+              onClick={() => {
+                localStorage.removeItem('myUserId');
+                navigate(PATHS.LOGIN);
+              }}
+              style={{ 
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center' 
+              }}
+              title="ログアウト"
+            >
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </div>
+
+            {/* ? マークのボタン */}
+            <div 
+              className="yucho-help-icon" 
+              onClick={() => setIsHelpOpen(true)}
+              style={{ cursor: 'pointer' }}
+              title="ヘルプ"
+            >
+              ?
+            </div>
+          </div>
         </div>
 
         {/* ユーザプロフィールエリア */}
         <div className="user-header">
           <div className="avatar">
-            {/* アイコンはDB上 null がありうるので、未設定のときも代替画像にする */}
             <img
               src={currentUser?.userIconURL ?? "https://via.placeholder.com/60"}
               alt="ユーザアイコン" 
@@ -104,7 +148,7 @@ export default function UserInfo() {
           </div>
         </div>
 
-        {/* メインアクションボタン（横並び） */}
+        {/* メインアクションボタン */}
         <div className="action-buttons-grid">
           <button onClick={handleTransferClick} className="action-card transfer-card">
             <div className="action-icon-circle red-theme">
@@ -148,12 +192,64 @@ export default function UserInfo() {
                       <span className="history-date">{item.date}</span>
                     </div>
                   </div>
-                  <span className="history-amount">-{item.amount.toLocaleString()}円</span>
+                  <span className="history-amount" style={{ color: item.amount < 0 ? '#333' : '#d32f2f' }}>
+                    {item.amount > 0 ? `+${item.amount.toLocaleString()}円` : `${item.amount.toLocaleString()}円`}
+                  </span>
                 </div>
               ))
             )}
           </div>
         </div>
+
+        {/* ヘルプモーダル */}
+        {isHelpOpen && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            borderRadius: '24px',
+          }}>
+            <div style={{
+              background: '#fff',
+              padding: '25px',
+              borderRadius: '12px',
+              width: '80%',
+              maxWidth: '280px',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            }}>
+              <h3 style={{ marginBottom: '15px', color: '#333', fontSize: '16px' }}>アプリの使い方</h3>
+              <p style={{ fontSize: '12px', color: '#666', lineHeight: '1.6', textAlign: 'left', marginBottom: '20px' }}>
+                • <b>ユーザー切替</b>: 上部のボタンでAさんやBさんを切り替えられます。<br/>
+                • <b>送金する</b>: 別のユーザーへお金を送ることができます。<br/>
+                • <b>請求する</b>: 請求用リンクを作成できます。<br/>
+                • <b>履歴</b>: 送金はマイナス、受取はプラスで自動表示されます。
+              </p>
+              <button
+                onClick={() => setIsHelpOpen(false)}
+                style={{
+                  padding: '8px 20px',
+                  background: '#d32f2f',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                }}
+              >
+                閉じる
+              </button>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
