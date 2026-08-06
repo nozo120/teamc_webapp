@@ -1,0 +1,51 @@
+/* src/styles/phone.css */
+/* スマホ枠の見た目。各画面で使い回すのでここにだけ書く */
+
+/* 画面全体（スマホ枠を中央に置くための背景） */
+.phone-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #eef2f5;
+}
+
+/* . を忘れずに付ける */
+.phone {
+    width: 360px;
+    height: 640px;
+    padding: 24px 16px;
+    background-color: #ffffff;
+    border: 8px solid #222;
+    border-radius: 36px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    /* padding と border を width に含める（これが無いと枠が太る） */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* 枠の左上に置く「戻る」ボタン
+   Morita担当の .back-button とぶつからないよう別名にしている */
+.phone-back-button {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    padding: 4px 0;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.phone-back-button:hover {
+    color: #3b82f6;
+}
+
+.phone-title {
+    font-size: 18px;
+    margin: 0 0 16px;
+    text-align: left;
+    color: #1f2937;
+}

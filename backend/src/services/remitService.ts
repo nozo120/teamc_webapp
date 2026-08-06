@@ -1,7 +1,9 @@
 import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient();
+
 export async function dealing(senderId: number, receiverId: number, amount: number, message: string)
 {if (amount <= 0) {throw new RangeError( "送金金額が不適切です!")};
+ 
     const sender = await prisma.user.findUnique({where: {id: senderId}});
 const receiver = await prisma.user.findUnique({where: {id: receiverId}});
 if (sender === null || receiver === null)
