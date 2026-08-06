@@ -11,6 +11,8 @@ import { getMyUserId } from './utils/myUserId';
 import TransferScreen from './pages/Morita/TransferScreen';
 import TransferComplete from './pages/Morita/TransferComplete';
 import PaymentScreen from './pages/Morita/PaymentScreen';
+// RequestScreen は default export なので { } は付けない
+import RequestScreen from './pages/Miyazawa/RequestScreen';
 
 // TODO: ログイン機能ができたら、自分のIDはログイン情報から取得する
 const MY_USER_ID = getMyUserId();
@@ -51,6 +53,8 @@ function App() {
         <Route path={PATHS.COMPLETE} element={<TransferComplete />} />
         {/* 請求リンクの作成画面 */}
         <Route path={PATHS.INVOICE_CREATE} element={<InvoicelinkCreationPage />} />
+        {/* 請求リンクの作成完了画面。作成した請求は InvoicelinkCreationPage から state で渡される */}
+        <Route path={PATHS.INVOICE_COMPLETE} element={<RequestScreen />} />
         {/* 請求リンクから開く支払い画面 */}
         <Route
           path="/payment"

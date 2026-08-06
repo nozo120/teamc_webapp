@@ -1,10 +1,11 @@
 // src/pages/Hayashi/InvoicelinkCreationPage.tsx
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { InputNumCard } from './inputs/InputNumCard';
 import { InputTextCard } from './inputs/InputTextCard';
-import { createRequest, CreateRequestResult } from '../../utils/requestApi';
+import { createRequest } from '../../utils/requestApi';
 import { getMyUserId } from '../../utils/myUserId';
+import { PATHS } from '../../routes/paths';
 import '../../styles/phone.css';
 import './InvoicelinkCreationPage.css';
 
@@ -28,6 +29,9 @@ export function InvoicelinkCreationPage() {
     const location = useLocation();
     const state = location.state as InvoiceCreationState | null;
 
+    // 登録に成功したら完了画面へ移動するために使う
+    const navigate = useNavigate();
+
     // TODO: 遷移元ができたら `const { recipientId } = location.state as InvoiceCreationState;` に戻す
     // URL直打ち・リロードだと state が null になり画面が落ちるため、動作確認用に仮のIDを使う
     const recipientId = state?.recipientId ?? 1;
@@ -37,9 +41,6 @@ export function InvoicelinkCreationPage() {
 
     // 送信に失敗したときのメッセージ。成功時・未送信時は null
     const [submitError, setSubmitError] = useState<string | null>(null);
-
-    // 登録に成功して返ってきた請求。完了画面ができるまでの仮表示に使う
-    const [result, setResult] = useState<CreateRequestResult | null>(null);
 
     // 金額が入っていないうちは押せないようにする
     const canSubmit = amount > 0 && !isSubmitting;
@@ -58,7 +59,9 @@ export function InvoicelinkCreationPage() {
                 requesterId: getMyUserId(), // 請求する人（自分）
                 payerId: recipientId,       // 支払う人（請求先）
             });
-            setResult(created);
+            // 返ってきた請求をそのまま完了画面へ渡す
+            // replace: true で、完了画面から戻るボタンを押しても入力画面に戻らない（＝二重登録を防ぐ）
+            navigate(PATHS.INVOICE_COMPLETE, { state: created, replace: true });
         } catch (err) {
             setSubmitError(err instanceof Error ? err.message : '請求の登録に失敗しました');
         } finally {
@@ -96,14 +99,6 @@ export function InvoicelinkCreationPage() {
                 <p className='invoice-preview'>請求先ID: {recipientId}</p>
                 <p className='invoice-preview'>入力中の金額: {amount}円</p>
                 <p className='invoice-preview'>入力中のメッセージ: {message}</p>
-
-                {/* TODO: 完了画面ができたら、この仮表示を消して navigate に置き換える */}
-                {result && (
-                    <>
-                        <p className='invoice-preview'>登録された請求ID: {result.id}</p>
-                        <p className='invoice-preview'>請求リンク: {result.requestLink}</p>
-                    </>
-                )}
             </div>
         </div>
     );
