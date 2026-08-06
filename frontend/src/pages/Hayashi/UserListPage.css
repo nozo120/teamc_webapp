@@ -1,5 +1,28 @@
 /* スマホ枠（.phone-container / .phone / .phone-title）は src/styles/phone.css に移動 */
 
+/* 名前で絞り込む検索欄。タイトルと一覧の間に置く */
+.user-search {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1f2937;
+    /* 一覧がスクロールしても検索欄は縮まないようにする */
+    flex-shrink: 0;
+}
+
+.user-search:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.user-search::placeholder {
+    color: #9ca3af;
+}
+
 /* 一覧は枠内でスクロールさせる */
 .user-list {
     list-style: none;
@@ -11,6 +34,14 @@
 
 .user-list-item {
     border-bottom: 1px solid #eee;
+}
+
+/* 検索で0件になったとき、一覧が空のままだと壊れて見えるので文言を出す */
+.user-list-empty {
+    padding: 24px 8px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 14px;
 }
 
 .user-button {

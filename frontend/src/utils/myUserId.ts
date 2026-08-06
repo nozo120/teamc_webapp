@@ -12,13 +12,5 @@
  * @returns 使用者のId
  */
 export function getMyUserId():number{
-    const me = new URLSearchParams(window.location.search).get('me');
-    const parsed = Number(me);
-
-    // ?me= が無い / 数値でない場合は既定の 1 を使う
-    if (me === null || !Number.isInteger(parsed) || parsed <= 0) {
-        return 1;
-    }
-
-    return parsed;
+    return 1;
 }
