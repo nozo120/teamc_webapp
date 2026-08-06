@@ -16,9 +16,6 @@ model User {
   balance Int
   userIconURL String?
 
-
-}
-
   // 送金履歴
   sentTransactions     Transaction[] @relation("SentTransactions")
   receivedTransactions Transaction[] @relation("ReceivedTransactions")
@@ -27,7 +24,6 @@ model User {
   createdRequests Request[] @relation("CreatedRequests")
   paidRequests    Request[] @relation("PaidRequests")
 }
-
 
 // 2. 送金履歴テーブル
 model Transaction {

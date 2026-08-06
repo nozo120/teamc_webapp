@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import remitRoutes from './routes/remitRoutes.js';
 
 import requestRoute from "./routes/requestRoutes.js";
+import userRoute from "./routes/userRoutes.js";
 
 import { handleRemit } from './controllers/remitController.js';
 
@@ -19,6 +21,8 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Team C バックエンドサーバー起動中！' });
 });
+
+app.use('/api/remit', remitRoutes);
 
 
 
@@ -37,3 +41,6 @@ app.listen(PORT, () => {
 
 
 app.use("/request", requestRoute);
+
+// ユーザー情報API（json-server(3010) の /users を置き換えるもの）
+app.use("/users", userRoute);

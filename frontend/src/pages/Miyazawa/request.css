@@ -1,0 +1,94 @@
+/* 全体のコンテナ（スマホ枠を中央に配置） */
+.request-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+}
+
+/* スマホの画面枠 */
+.request-phone-frame {
+  width: 375px;
+  height: 667px;
+  background-color: #ffffff;
+  border: 4px solid #333333;
+  border-radius: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 24px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* テキストエリア */
+.request-message-area {
+  margin-top: 80px;
+  text-align: center;
+}
+
+.request-main-text {
+  font-size: 18px;
+  font-weight: bold;
+  /* ホーム画面の文字色に合わせた濃い紺色 */
+  color: #1a2b3c;
+  margin-bottom: 20px;
+}
+
+.request-sub-text {
+  font-size: 13px;
+  color: #555555;
+  background-color: #fff5f7; /* 薄いピンクの背景にして統一感を出す */
+  padding: 12px;
+  border-radius: 8px;
+  word-break: break-all;
+  border: 1px solid #ffd1dc; /* ピンクがかったボーダー */
+  text-align: left;
+}
+
+/* ボタンをまとめるエリア */
+.request-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+/* 共通のボタンデザイン */
+.request-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px; /* ホーム画面のカードのように少し丸みを強める */
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+/* メインボタン（ホーム画面のピンク・赤グラデーションに合わせたカラー） */
+.request-btn-green {
+  background: linear-gradient(135deg, #ff4e78 0%, #e60039 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(230, 0, 57, 0.2);
+}
+
+.request-btn-green:hover {
+  opacity: 0.9;
+}
+
+/* サブボタン（トップ画面に戻る：ホーム画面のカード枠に合わせた上品なデザイン） */
+.request-btn-white {
+  background-color: #ffffff;
+  color: #1a2b3c;
+  border: 1.5px solid #ffccd5; /* 薄いピンクの枠線 */
+}
+
+.request-btn-white:hover {
+  background-color: #fff9fa;
+}

@@ -5,4 +5,7 @@ export const PATHS = {
   USER_LIST: '/users',  // 送金相手を選択
   TRANSFER: '/transfer',// 送金入力
   COMPLETE: '/complete',// 送金完了
+  INVOICE_USER_LIST: '/invoice/users', // 請求先を選択
+  INVOICE_CREATE: '/invoice/new',      // 請求リンクを作成
+  INVOICE_COMPLETE: '/invoice/complete', // 請求リンクの作成完了
 } as const;

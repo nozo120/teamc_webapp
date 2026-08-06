@@ -17,8 +17,10 @@ export const createRequestLink = async (
     `${String(createdAt.getSeconds()).padStart(2, "0")}-` +
     `${String(createdAt.getMilliseconds()).padStart(3, "0")}`;
 
+  // ホスト名は付けずパスだけを返す。
+  // フロントのポートは人によって違うため、表示する側で window.location.origin を足す
   const requestLink =
-    `http://localhost:3002/payment/?time=${formattedTime}` +
+    `/payment/?time=${formattedTime}` +
     `&kozaBango=${requesterId}` +
     `&payerId=${payerId}` +
     `&kingaku=${amount}` +

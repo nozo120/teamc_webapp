@@ -1,32 +1,33 @@
 {
-    "users": [
-        {
-            "id": 1,
-            "userIconURL": "/images/men/man1.png",
-            "accountNumber": 1234567,
-            "name": "ヤマダ タロウ",
-            "balance": 250000
-        },
-        {
-            "id": 2,
-            "userIconURL": "/images/men/man2.png",
-            "accountNumber": 7654321,
-            "name": "スズキ イチロウ",
-            "balance": 1800000
-        },
-        {
-            "id": 3,
-            "userIconURL": "/images/men/man3.png",
-            "accountNumber": 7654321,
-            "name": "スズキ ケイタ",
-            "balance": 1800000
-        },
-        {
-            "id": 4,
-            "userIconURL": "/images/women/woman1.png",
-            "accountNumber": 7654321,
-            "name": "スズキ ミヨ",
-            "balance": 1800000
-        }
-    ]
+  "users": [
+    {
+      "id": "1",
+      "userIconURL": "/images/men/man1.png",
+      "accountNumber": 1234567,
+      "name": "ヤマダ タロウ",
+      "balance": 26656
+    },
+    {
+      "id": "2",
+      "userIconURL": "/images/men/man2.png",
+      "accountNumber": 7654322,
+      "name": "スズキ イチロウ",
+      "balance": 2023344
+    },
+    {
+      "id": "3",
+      "userIconURL": "/images/men/man3.png",
+      "accountNumber": 7654323,
+      "name": "スズキ ケイタ",
+      "balance": 1800000
+    },
+    {
+      "id": "4",
+      "userIconURL": "/images/women/woman1.png",
+      "accountNumber": 7654324,
+      "name": "スズキ ミヨ",
+      "balance": 1800000
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
