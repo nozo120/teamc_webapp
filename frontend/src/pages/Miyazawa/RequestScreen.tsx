@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore
 import './request.css';
 
 export default function RequestScreen() {
-  const generatedLink = "https://example.com/pay?id=123456";
+  const [generatedLink, setGeneratedLink] = useState("https://example.com/pay?id=123456");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -15,6 +15,18 @@ export default function RequestScreen() {
   const handleBackToTop = () => {
     alert("トップ画面に戻るボタンが押されました");
   };
+
+  useEffect(() => {
+    // 起動したバックエンドのURLを指定
+    fetch('http://localhost:3001/api/requests') // ※APIのパスは実際のルーティングに合わせて調整してください
+      .then((res) => res.json())
+      .then((data) => {
+        setGeneratedLink(data.link);
+      })
+      .catch((err) => {
+        console.error("通信エラー:", err);
+      });
+  }, []);
 
   return (
     <div className="request-container">
