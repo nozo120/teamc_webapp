@@ -1,10 +1,5 @@
 // remitApi.ts
-// 送金処理（json-server版）
-//
-// 本来この処理はバックエンド(POST /api/remit)が1回で行うべきもの。
-// backend がまだ安定して動かない（app.listen重複・ポート衝突）間の代替として、
-// json-server に対して「残高を読む → 計算する → 書き戻す」を手動で行っている。
-// backend が安定したら、remit関数の中身を fetch("/api/remit") 1本に差し替える。
+// 送金処理（json-server / バックエンド連携版）
 
 const API_BASE = "http://localhost:3001";
 
@@ -15,34 +10,28 @@ type RemitParams = {
   message?: string;
 };
 
-
-// 口座番号からユーザーを1件探す（必要に応じてバックエンドのユーザー検索APIに繋ぎ替え）
+// json-server の users から1件取得する
 const fetchUser = async (id: number) => {
   const res = await fetch(`${API_BASE}/users/${id}`);
   if (!res.ok) throw new Error("ユーザー情報の取得に失敗しました");
   return res.json();
 };
 
-// 口座番号からユーザーを1件探す
-// 口座番号で見つからなければユーザーIDとして検索する
+// 請求リンクの口座番号からユーザーを1件探す（IDでのフォールバック付き）
 export const fetchUserByAccountNumber = async (accountNumber: string) => {
   const res = await fetch(`${API_BASE}/users?accountNumber=${accountNumber}`);
-
   if (res.ok) {
     const users = await res.json();
-
     if (Array.isArray(users) && users.length > 0) {
       return users[0];
     }
   }
 
-  // 口座番号として見つからなかった場合はID検索
+  // 口座番号で見つからなかった場合、ユーザーIDとして直接取得を試す
   const byId = await fetch(`${API_BASE}/users/${accountNumber}`);
-
   if (!byId.ok) {
     throw new Error("請求元のユーザーが見つかりませんでした");
   }
-
   return byId.json();
 };
 
@@ -52,7 +41,9 @@ export const remit = async ({ senderId, receiverId, amount, message }: RemitPara
     senderId,
     receiverId,
     amount,
+    message,
   });
+
   const res = await fetch(`${API_BASE}/api/remit`, {
     method: "POST",
     headers: {
