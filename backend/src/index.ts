@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import requestRoute from "./routes/requestRoutes.js";
+import userRoute from "./routes/userRoutes.js";
 
 import { handleRemit } from './controllers/remitController.js';
 
@@ -37,3 +38,6 @@ app.listen(PORT, () => {
 
 
 app.use("/request", requestRoute);
+
+// ユーザー情報API（json-server(3010) の /users を置き換えるもの）
+app.use("/users", userRoute);
