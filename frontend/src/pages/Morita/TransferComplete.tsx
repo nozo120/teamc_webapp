@@ -37,12 +37,16 @@ const TransferComplete: React.FC = () => {
     );
   }
 
-  const { recipient: user, amount, message, kind } = state;
+  const { recipient: user, amount, message, kind, viewerId } = state;
 
   // 請求リンクからの支払いか、通常の送金かで文言だけ変える
   const isPayment = kind === "payment";
   const title = isPayment ? "支払いが完了しました" : "送金が完了しました";
   const amountLabel = isPayment ? "支払額" : "送金額";
+
+  // ログイン機能が無く ?me= で操作者を切り替えているため、
+  // ホームに戻るときも同じ人の画面になるよう引き継ぐ
+  const homePath = viewerId ? `${PATHS.HOME}?me=${viewerId}` : PATHS.HOME;
 
   return (
     <div className="container">
@@ -70,7 +74,7 @@ const TransferComplete: React.FC = () => {
 
         <p className="complete-datetime">完了日時 {formatDateTime(completedAt)}</p>
 
-        <button className="submit-button" onClick={() => navigate(PATHS.HOME)}>
+        <button className="submit-button" onClick={() => navigate(homePath)}>
           ホームに戻る
         </button>
       </div>

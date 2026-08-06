@@ -121,7 +121,7 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       });
 
       navigate(PATHS.COMPLETE, {
-        state: { recipient: requester, amount, message, kind: "payment" },
+        state: { recipient: requester, amount, message, kind: "payment", viewerId: payerId },
       });
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "支払いに失敗しました");
@@ -150,8 +150,8 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
     <div className="container">
       <div className="phone-frame">
       <div className="phone-scroll full-page">
-        {/* 戻るボタン：ホーム画面に戻る */}
-        <button className="back-button" onClick={() => navigate(PATHS.HOME)}>
+        {/* 戻るボタン：支払う人のホーム画面に戻る（?me= を引き継ぐ） */}
+        <button className="back-button" onClick={() => navigate(`${PATHS.HOME}?me=${payerId}`)}>
           ← 戻る
         </button>
 

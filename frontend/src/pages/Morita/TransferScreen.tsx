@@ -216,7 +216,7 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       });
 
       navigate(PATHS.COMPLETE, {
-        state: { recipient, amount, message },
+        state: { recipient, amount, message, viewerId: senderId },
       });
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "送金に失敗しました");
