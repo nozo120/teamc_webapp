@@ -73,7 +73,7 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         <div className="phone-frame">
           <div className="phone-scroll full-page">
             <p>送金先が選択されていません</p>
-            <button onClick={() => navigate("/")}>送金先を選び直す</button>
+            <button onClick={() => navigate(PATHS.HOME)}>送金先を選び直す</button>
           </div>
         </div>
       </div>
