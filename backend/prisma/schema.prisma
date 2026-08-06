@@ -15,15 +15,7 @@ model User {
   accountNumber String @unique
   balance Int
   userIconURL String?
-<<<<<<< HEAD
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> 1091867c1a58123976a1db51e4efe7f818185972
-=======
-
->>>>>>> a4699c581c551613ce8071869d07dda66f351364
   // 送金履歴
   sentTransactions     Transaction[] @relation("SentTransactions")
   receivedTransactions Transaction[] @relation("ReceivedTransactions")
