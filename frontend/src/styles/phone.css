@@ -40,12 +40,19 @@
 }
 
 .phone-back-button:hover {
-    color: #3b82f6;
+    color: #e60039;
 }
 
+.phone-back-button:disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* 見出し。CSSはグローバルに読み込まれるので、各ページ側で再定義せずここだけで管理する */
 .phone-title {
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: bold;
     margin: 0 0 16px;
     text-align: left;
-    color: #1f2937;
+    color: #1a2b3c;
 }
