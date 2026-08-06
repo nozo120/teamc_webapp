@@ -19,7 +19,6 @@ const fetchUser = async (id: number) => {
 
 // 請求リンクの口座番号からユーザーを1件探す（IDでのフォールバック付き）
 export const fetchUserByAccountNumber = async (accountNumber: string) => {
-  // まず口座番号として検索を試みる
   const res = await fetch(`${API_BASE}/users?accountNumber=${accountNumber}`);
   if (res.ok) {
     const users = await res.json();

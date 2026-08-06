@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function dealing(senderId: number, receiverId: number, amount: number) {
+export async function dealing(senderId: number, receiverId: number, amount: number, message?: string) {
   if (amount <= 0) {
     throw new RangeError("送金金額が不適切です！");
   }
@@ -15,12 +15,12 @@ export async function dealing(senderId: number, receiverId: number, amount: numb
   }
 
   if (senderId === receiverId) {
-    throw new Error("送信元と宛先が同じです");
+    throw new Error("送金元と宛先が同じです！");
   }
 
   const new_sender_amount = sender.balance - amount;
   if (new_sender_amount < 0) {
-    throw new RangeError("送金金額が預金残高を超えています");
+    throw new RangeError("送金額が預金残高を超過しています！");
   }
 
   const new_receiver_amount = receiver.balance + amount;
@@ -33,6 +33,14 @@ export async function dealing(senderId: number, receiverId: number, amount: numb
     prisma.user.update({
       where: { id: receiverId },
       data: { balance: new_receiver_amount },
+    }),
+    prisma.transaction.create({
+      data: {
+        senderId,
+        receiverId,
+        amount,
+        message: message ?? "",
+      },
     }),
   ]);
 
