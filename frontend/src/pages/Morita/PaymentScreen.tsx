@@ -41,15 +41,22 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
   const [searchParams] = useSearchParams();
 
   // リンクから請求内容を取り出す
-  const accountNumber = searchParams.get("kozaBango");
+  const accountNumber = searchParams.get("kozaBango"); // 請求した人（受け取る側）
+  const payerIdParam = searchParams.get("payerId");    // 請求された人（支払う側）
   const amount = parseInt(searchParams.get("kingaku") ?? "", 10);
   const rawMessage = searchParams.get("message");
   // 未入力のとき文字列の "undefined" が入ってくるので、空メッセージとして扱う
   const message = !rawMessage || rawMessage === "undefined" ? "" : rawMessage;
   const requestedAt = formatLinkTime(searchParams.get("time"));
 
+  // 実際に支払う人。リンクに payerId があればそれを優先する。
+  // ログイン機能が無く senderId は固定値なので、リンクの指定が無いときだけ props を使う
+  const payerId = payerIdParam ? Number(payerIdParam) : senderId;
+
   // 請求した人の情報（口座番号からDBを引く）
   const [requester, setRequester] = useState<User | null>(null);
+  // 支払う人の残高（リンクの payerId が自分と違う場合、propsの残高は使えないので取り直す）
+  const [payerBalance, setPayerBalance] = useState<number | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -71,11 +78,30 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
       .catch((err) => setLoadError(err.message));
   }, [accountNumber]);
 
+  useEffect(() => {
+    // 支払う人が自分自身ならpropsの残高をそのまま使う
+    if (payerId === senderId) {
+      setPayerBalance(maxAmount);
+      return;
+    }
+    fetchUserByAccountNumber(String(payerId))
+      .then((dbUser) => setPayerBalance(dbUser.balance))
+      .catch(() => setLoadError("支払い元のユーザーが見つかりませんでした"));
+  }, [payerId, senderId, maxAmount]);
+
   // 金額が読み取れない＝リンクが壊れている
   const isInvalidLink = isNaN(amount) || amount <= 0;
-  // 残高が足りているか
-  const isOverLimit = !isInvalidLink && amount > maxAmount;
-  const canSubmit = !isInvalidLink && !isOverLimit && requester !== null && !isSubmitting;
+  // 請求元と支払い元が同じリンクは成立しない（バックエンドでもエラーになる）
+  const isSamePerson = requester !== null && Number(requester.id) === payerId;
+  // 残高が足りているか（残高を取得できるまでは判定しない）
+  const isOverLimit = !isInvalidLink && payerBalance !== null && amount > payerBalance;
+  const canSubmit =
+    !isInvalidLink &&
+    !isOverLimit &&
+    !isSamePerson &&
+    requester !== null &&
+    payerBalance !== null &&
+    !isSubmitting;
 
   const handlePay = async () => {
     if (!canSubmit || !requester) return;
@@ -88,7 +114,7 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
 
     try {
       await remit({
-        senderId,
+        senderId: payerId,
         receiverId: Number(requester.id),
         amount,
         message,
@@ -154,11 +180,18 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         </div>
 
         {isOverLimit && <p className="error-text">※残高が不足しています</p>}
+        {isSamePerson && (
+          <p className="error-text">※請求元と支払い元が同じため、支払えません</p>
+        )}
 
         <div className="balance-row">
           <span>支払い後の残高</span>
           <span className="balance-value">
-            {isOverLimit ? "-" : (maxAmount - amount).toLocaleString()}円
+            {payerBalance === null
+              ? "確認中..."
+              : isOverLimit
+                ? "残高不足"
+                : `${(payerBalance - amount).toLocaleString()}円`}
           </span>
         </div>
 
