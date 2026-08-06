@@ -9,7 +9,7 @@ const API_URL = 'http://localhost:3010/users';
  */
 export async function getUsers(): Promise<user[]> {
     const response = await fetch(API_URL);
-
+    console.log(response);
     if (!response.ok) {
         throw new Error('ユーザー情報の取得に失敗しました');
     }
