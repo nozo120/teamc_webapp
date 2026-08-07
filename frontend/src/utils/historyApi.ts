@@ -11,7 +11,7 @@ export type TransactionHistory = {
 };
 
 /**
- * 指定したユーザーの入出金履歴を取得する
+ * 指定ユーザーの入出金履歴を取得
  */
 export async function getTransactionHistory(
     userId: number
@@ -25,5 +25,7 @@ export async function getTransactionHistory(
         throw new Error('入出金履歴の取得に失敗しました');
     }
 
-    return response.json();
+    const history: TransactionHistory[] = await response.json();
+
+    return history;
 }

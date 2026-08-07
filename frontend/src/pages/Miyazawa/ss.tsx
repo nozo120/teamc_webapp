@@ -13,7 +13,9 @@ export default function UserInfo() {
   const [currentUser, setCurrentUser] = useState<user | null>(null);
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [historyList, setHistoryList] = useState<TransactionHistory[]>([]);
-  
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  const [historyFilter, setHistoryFilter] = useState<'all' | 'income' | 'expense'>('all');
+
   // モーダルの開閉を管理するステート
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
@@ -37,10 +39,6 @@ export default function UserInfo() {
       });
   }, [currentUserId]);
 
-  const handleSwitchUser = (userId: number) => {
-    window.location.search = `?me=${userId}`;
-  };
-
   const handleTransferClick = () => {
     navigate(PATHS.USER_LIST);
   };
@@ -49,6 +47,20 @@ export default function UserInfo() {
     navigate(PATHS.INVOICE_USER_LIST);
   };
 
+  const filteredHistory = historyList.filter((item) => {
+    if (historyFilter === 'income') {
+      return item.amount > 0;
+    }
+    if (historyFilter === 'expense') {
+      return item.amount < 0;
+    }
+    return true;
+  });
+
+  const displayedHistory = showAllHistory
+    ? filteredHistory
+    : filteredHistory.slice(0, 3);
+  
   return (
     <div className="container">
       <div className="phone-frame">
@@ -61,7 +73,7 @@ export default function UserInfo() {
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {/* 🌟 ログアウトボタン（クリックでログイン画面へ遷移） */}
+            {/* ログアウトボタン */}
             <div 
               className="yucho-help-icon" 
               onClick={() => {
@@ -92,7 +104,7 @@ export default function UserInfo() {
               </svg>
             </div>
 
-            {/* ? マークのボタン */}
+            {/* ヘルプボタン */}
             <div 
               className="yucho-help-icon" 
               onClick={() => setIsHelpOpen(true)}
@@ -172,18 +184,70 @@ export default function UserInfo() {
         </div>
 
         {/* 取引履歴セクション */}
-        <div className="history-section">
-          <div className="history-header-area">
-            <span className="history-title">入出金明細 (直近)</span>
-            <span className="history-all">一覧を見る</span>
+        <div className="history-section" style={{ padding: '0 16px 20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <h3 style={{ fontSize: '15px', color: '#333', fontWeight: 'bold', margin: 0 }}>入出金明細</h3>
+            
+            {/* 🌟 キレイに整えたフィルタータブ */}
+            <div style={{ display: 'flex', background: '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
+              <button
+                onClick={() => setHistoryFilter('all')}
+                style={{
+                  background: historyFilter === 'all' ? '#fff' : 'transparent',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  fontWeight: historyFilter === 'all' ? 'bold' : 'normal',
+                  color: historyFilter === 'all' ? '#d32f2f' : '#666',
+                  cursor: 'pointer',
+                  boxShadow: historyFilter === 'all' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                }}
+              >
+                すべて
+              </button>
+              <button
+                onClick={() => setHistoryFilter('income')}
+                style={{
+                  background: historyFilter === 'income' ? '#fff' : 'transparent',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  fontWeight: historyFilter === 'income' ? 'bold' : 'normal',
+                  color: historyFilter === 'income' ? '#d32f2f' : '#666',
+                  cursor: 'pointer',
+                  boxShadow: historyFilter === 'income' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                }}
+              >
+                入金
+              </button>
+              <button
+                onClick={() => setHistoryFilter('expense')}
+                style={{
+                  background: historyFilter === 'expense' ? '#fff' : 'transparent',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  fontWeight: historyFilter === 'expense' ? 'bold' : 'normal',
+                  color: historyFilter === 'expense' ? '#d32f2f' : '#666',
+                  cursor: 'pointer',
+                  boxShadow: historyFilter === 'expense' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                }}
+              >
+                出金
+              </button>
+            </div>
           </div>
+         
           <div className="history-list">
-            {historyList.length === 0 ? (
-              <p style={{ textAlign: 'center', color: '#888', fontSize: '14px', marginTop: '20px' }}>
+            {displayedHistory.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#888', fontSize: '13px', padding: '20px 0' }}>
                 明細はありません
               </p>
             ) : (
-              historyList.map((item) => (
+              displayedHistory.map((item) => (
                 <div key={item.id} className="history-item">
                   <div className="history-left">
                     <div className="history-icon-dot"></div>
@@ -199,6 +263,26 @@ export default function UserInfo() {
               ))
             )}
           </div>
+
+          {/* 🌟 もっと見る / 閉じる 切り替えボタン */}
+          {filteredHistory.length > 3 && (
+            <div style={{ textAlign: 'center', marginTop: '10px' }}>
+              <button
+                onClick={() => setShowAllHistory(!showAllHistory)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#d32f2f',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                }}
+              >
+                {showAllHistory ? '折り畳む ▲' : 'もっと見る ▼'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ヘルプモーダル */}
