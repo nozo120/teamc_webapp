@@ -6,6 +6,7 @@ import { getIconUrl } from "./types";
 import { remit } from "./api/remitApi";
 import { PATHS } from "../../routes/paths";
 import Toast from "./Toast";
+import SendingOverlay from "./SendingOverlay";
 import "./TransferScreen.css";
 
 // メッセージ欄に入力できる最大文字数
@@ -329,9 +330,13 @@ const TransferScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
         onClick={handleSubmit}
         disabled={!canSubmit || isSubmitting}
       >
-        {isSubmitting ? <span className="button-spinner" /> : "送金"}
+        送金
       </button>
     </div>
+    {/* 送金中の演出。phone-scrollの外に置いて画面全体を覆う */}
+    {isSubmitting && (
+      <SendingOverlay toName={recipient.name} toImageUrl={getIconUrl(recipient)} label="送金中" />
+    )}
     {/* phone-scrollの外＝phone-frame直下に置くことで、中がスクロールされていても位置がずれない */}
     {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
     </div>

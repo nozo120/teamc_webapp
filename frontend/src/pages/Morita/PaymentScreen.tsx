@@ -20,6 +20,7 @@ import { remit, fetchUserByAccountNumber } from "./api/remitApi";
 import { PATHS } from "../../routes/paths";
 import { setMyUserId } from "../../utils/myUserId";
 import Toast from "./Toast";
+import SendingOverlay from "./SendingOverlay";
 import "./TransferScreen.css";
 
 type Props = {
@@ -220,9 +221,13 @@ const PaymentScreen: React.FC<Props> = ({ maxAmount, senderId }) => {
           onClick={handlePay}
           disabled={!canSubmit}
         >
-          {isSubmitting ? <span className="button-spinner" /> : "支払う"}
+          支払う
         </button>
       </div>
+      {/* 支払い中の演出。phone-scrollの外に置いて画面全体を覆う */}
+      {isSubmitting && requester && (
+        <SendingOverlay toName={requester.name} toImageUrl={requester.imageUrl} label="支払い中" />
+      )}
       {submitError && <Toast message={submitError} onClose={() => setSubmitError(null)} />}
       </div>
     </div>
