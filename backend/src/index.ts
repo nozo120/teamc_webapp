@@ -5,6 +5,7 @@ import remitRoutes from './routes/remitRoutes.js';
 
 import requestRoute from "./routes/requestRoutes.js";
 import userRoute from "./routes/userRoutes.js";
+import transactionRoute from './routes/transactionRoutes.js';
 
 import { handleRemit } from './controllers/remitController.js';
 
@@ -17,9 +18,8 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-import { TransactionController } from './controllers/transactionController.js';
 // 画面が開いたときにフロントから呼ばれるエンドポイント
-app.get('/history', TransactionController.getTransactions);
+app.use('/history', transactionRoute);
 
 // 動作確認用API
 app.get('/api/health', (req, res) => {
@@ -28,14 +28,9 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/remit', remitRoutes);
 
-
-
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// ② 送金APIのエンドポイントを追加
-app.post('/api/remit', handleRemit);
 
 app.use("/request", requestRoute);
 
