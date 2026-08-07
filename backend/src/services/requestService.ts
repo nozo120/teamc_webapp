@@ -1,5 +1,3 @@
-import { prisma } from "../utils/prisma.js";
-
 export const createRequestLink = async (
   amount: number,
   message: string | undefined,
@@ -27,8 +25,6 @@ export const createRequestLink = async (
     `&payerId=${payerId}` +
     `&kingaku=${amount}` +
     `&message=${encodeURIComponent(message ?? "")}`;
-
-  
 
   return {
     id: requestId,
